@@ -3,6 +3,7 @@ module PEPit
 
 
 using JuMP
+using Dualization
 using Mosek, MosekTools, Clarabel
 using LinearAlgebra
 using OrderedCollections
@@ -68,7 +69,8 @@ export
     AbstractFunction, PEPFunction,
     ConvexFunction, ConvexLipschitzFunction, SmoothFunction, SmoothConvexFunction, SmoothStronglyConvexFunction, StronglyConvexFunction, ConvexIndicatorFunction,
     LipschitzOperator, LinearOperator, NonexpansiveOperator, MonotoneOperator,
-    solve!, declare_function!, set_initial_point!, set_initial_condition!,
+    solve!, solve_dual!, DualPEPCertificate,
+    declare_function!, set_initial_point!, set_initial_condition!,
     set_performance_metric!, add_constraint!, add_psd_matrix!,
     oracle!, gradient!, value!, stationary_point!, fixed_point!,
     inexact_gradient_step!, bregman_gradient_step!, bregman_proximal_step!, epsilon_subgradient_step!, exact_linesearch_step!, inexact_proximal_step!, proximal_step!, linear_optimization_step!, shifted_optimization_step!,

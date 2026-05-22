@@ -100,9 +100,28 @@ We also have many examples in the `examples` folder of the package, please take 
 
 ## Solvers
 
-`PEPit.jl` uses `JuMP` and builds an SDP internally. The default backend in `solve!` is `Mosek.Optimizer`, and you can pass another JuMP-compatible SDP solver through the `solver` keyword (for example, `Clarabel.Optimizer` if you `using Clarabel`).
+`PEPit.jl` uses `JuMP` and builds an SDP internally. The default backend in `solve!` is `Clarabel.Optimizer`, and you can pass another JuMP-compatible SDP solver through the `solver` keyword (for example, `Mosek.Optimizer` if you `using Mosek`).
 
 Currently documented/used solvers in this repository are `Mosek` and `Clarabel`. Note: using `Mosek` requires a valid license (free for academic use), while `Clarabel` is open-source.
+
+## Explicit dual certificates
+
+`solve_dual!(problem; solver=Clarabel.Optimizer)` builds the same primal SDP, constructs its explicit conic dual with `Dualization.jl`, solves that dual model, and returns a `DualPEPCertificate`.
+
+The certificate exposes PEP-level dual fields:
+
+```julia
+certificate = solve_dual!(problem; verbose=false)
+certificate.α          # performance-metric multipliers
+certificate.λ          # problem-level inequality multipliers
+certificate.ν          # problem-level equality multipliers
+certificate.θ          # function/class scalar-constraint multipliers
+certificate.S          # main Gram PSD multiplier
+certificate.Y.problem  # problem-level PSD block multipliers
+certificate.Y.class    # function/class PSD block multipliers
+```
+
+After `solve_dual!`, `eval_dual(::Constraint)` and `eval_dual(::PSDMatrix)` are populated from the explicit-dual solution. Optimal dual solutions need not be unique, so the multipliers returned by `solve!` and `solve_dual!` should not be expected to match entrywise; their optimal objective values should agree up to solver tolerances.
 
 ## Repository layout
 
