@@ -1,6 +1,6 @@
 name = "PEPit"
 uuid = "362dabbc-d565-4ef8-96fa-aefabe1c072a"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Shuvomoy Das Gupta <shuvomoy.dasgupta@gmail.com> and contributors"]
 
 [deps]
