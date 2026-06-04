@@ -3,3 +3,5 @@
 *.aux
 *.listing
 *.log
+tutorials/.DS_Store
+.DS_Store
