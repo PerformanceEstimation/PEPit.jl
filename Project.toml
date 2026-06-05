@@ -24,7 +24,7 @@ Literate = "^2.21.0"
 Mosek = "^11.0.1"
 MosekTools = "^0.15.10"
 OffsetArrays = "^1.17.0"
-OrderedCollections = "^1.8.1"
+OrderedCollections = "^1.8.1, 2"
 julia = "^1.12"
 
 [extras]
