@@ -28,7 +28,7 @@ function wc_accelerated_gradient_strongly_convex(mu, L, n; verbose=false)
     mu == 0 && @warn "Momentum is tuned for strongly convex functions!"
 
     if verbose
-        @info "🐱 Example file: worst-case performance of the accelerated gradient method" 
+        @info "🐱 Example file: worst-case performance of the accelerated gradient method"
         @info "💻  PEPit guarantee: f(x_n)-f_*  <= $(round(PEPit_tau, digits=6)) (f(x_0) - f(x_*) + mu/2*||x_0 - x_*||^2)"
         @info "📝 Theoretical guarantee: f(x_n)-f_*  <= $(round(theoretical_tau, digits=6)) (f(x_0) - f(x_*) + mu/2*||x_0 - x_*||^2)"
     end
@@ -50,4 +50,3 @@ function wc_accelerated_gradient_strongly_convex(mu, L, n; verbose=false)
 end
 
 PEPit_val, theoretical_val = wc_accelerated_gradient_strongly_convex(0.1, 1.0, 2, verbose=true)
-
