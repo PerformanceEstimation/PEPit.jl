@@ -1,5 +1,6 @@
 function inexact_proximal_step!(x0::AbstractPoint, f::AbstractFunction, gamma::Real; opt::String="PD_gapII")
     if opt == "PD_gapI"
+
         v = Point()
         w = Point()
         fw = Expression()
@@ -16,6 +17,7 @@ function inexact_proximal_step!(x0::AbstractPoint, f::AbstractFunction, gamma::R
         constraint = (e^2 / 2 + gamma * eps_sub <= eps_var)
 
     elseif opt == "PD_gapII"
+
         e = Point()
         gx = Point()
         x = x0 - gamma * gx + e
@@ -26,6 +28,7 @@ function inexact_proximal_step!(x0::AbstractPoint, f::AbstractFunction, gamma::R
         w, v, fw = x, gx, fx
 
     elseif opt == "PD_gapIII"
+
         x, gx, w = Point(), Point(), Point()
         v = (x0 - x) / gamma
         fw, fx = Expression(), Expression()
@@ -39,8 +42,8 @@ function inexact_proximal_step!(x0::AbstractPoint, f::AbstractFunction, gamma::R
         error("inexact_proximal_step! supports only opt in ['PD_gapI','PD_gapII','PD_gapIII'], got $opt")
     end
 
+
     add_constraint!(f, constraint)
 
     return x, gx, fx, w, v, fw, eps_var
 end
-

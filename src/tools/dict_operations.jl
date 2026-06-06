@@ -21,6 +21,3 @@ function multiply_dicts(dict1::OrderedDict, dict2::OrderedDict)
     end
     return product_dict
 end
-
-
-
