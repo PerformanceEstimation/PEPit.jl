@@ -12,11 +12,13 @@ mutable struct PEP
         Function_counter[] = 0
         Global_Constraint_counter[] = 0
         PSDMatrix_counter[] = 0
+        BlockPartition_counter[] = 0
         NEXT_ID[] = 0
-        
+
         empty!(GLOBAL_LEAF_POINTS)
         empty!(GLOBAL_LEAF_EXPRESSIONS)
-        
+        empty!(GLOBAL_BLOCK_PARTITIONS)
+
         return new([], [], [], [], [], nothing)
     end
 end
@@ -28,6 +30,12 @@ function declare_function!(pep::PEP, func_class, param; reuse_gradient=nothing)
         func_class(param; is_leaf=true, reuse_gradient=reuse_gradient)
     push!(pep.list_of_functions, f)
     return f
+end
+
+function declare_block_partition!(pep::PEP, d::Int)
+
+
+    return BlockPartition(d)
 end
 
 
@@ -44,7 +52,6 @@ function add_psd_matrix!(pep::PEP, matrix_of_expressions)
     push!(pep.list_of_psd, PSDMatrix(matrix_of_expressions))
     return pep.list_of_psd[end]
 end
-
 
 
 function _expression_to_jump(expr::Expression, F, G)
@@ -126,7 +133,6 @@ function _apply_psd_duals!(packs)
 end
 
 
-
 function _eval_constraint_dual_values!(pep::PEP;
     perf_refs::Vector,
     init_refs::Vector,
@@ -144,11 +150,13 @@ function _eval_constraint_dual_values!(pep::PEP;
         pep.residual = nothing
     end
 
+
     for (cond, cref) in zip(pep.list_of_conditions, init_refs)
         d = dual(cref)
         cond._dual_variable_value =
             cond.equality_or_inequality == "inequality" ? -d : d
     end
+
 
     idx = 1
     for f in pep.list_of_functions
@@ -165,7 +173,6 @@ function _eval_constraint_dual_values!(pep::PEP;
 
     return pos_min
 end
-
 
 
 struct _PEPModelBuild
@@ -269,6 +276,21 @@ function _build_pep_jump_model!(pep::PEP;
         push!(initial_con_refs, cref)
     end
     verbose && println(" 💻 PEPit:  Setting up the problem: initial conditions and general constraints ($(length(pep.list_of_conditions)) constraint(s) added)")
+
+
+    partition_con_refs = Vector{Any}()
+    for (bpi, bp) in enumerate(GLOBAL_BLOCK_PARTITIONS)
+        add_partition_constraints!(bp)
+        for (m, c) in enumerate(bp.list_of_constraints)
+            expr_jump = _expression_to_jump(c.expression, F, G)
+            cref = _add_scalar_constraint!(model, expr_jump, c.equality_or_inequality)
+            _maybe_set_name!(cref, name_constraints, "partition_$(bpi)_constraint_$(m)")
+            push!(partition_con_refs, cref)
+        end
+    end
+    if !isempty(GLOBAL_BLOCK_PARTITIONS)
+        verbose && println(" 💻 PEPit:  Setting up the problem: $(length(partition_con_refs)) block-partition orthogonality constraint(s) added")
+    end
 
     global_psd_refs = Vector{Tuple}()
     if !isempty(pep.list_of_psd)
@@ -450,7 +472,6 @@ function solve_dual!(pep::PEP;
 end
 
 
-
 function _get_nb_eigs_and_corrected(M::AbstractMatrix{<:Real})
     S = 0.5 .* (M .+ M')
     ev = eigen(Symmetric(S))
@@ -466,7 +487,6 @@ function _get_nb_eigs_and_corrected(M::AbstractMatrix{<:Real})
     t = nb < length(λ) ? max(maximum(λ[.!nonzero]), 0.0) : 0.0
     return nb, t, Scorr
 end
-
 
 
 function _logdet_dimension_reduction!(model::JuMP.Model, G, objective, wc_value::Float64;
@@ -499,7 +519,7 @@ function _logdet_dimension_reduction!(model::JuMP.Model, G, objective, wc_value:
     end
 
     return wc_value
-    
+
 end
 
 
@@ -559,7 +579,6 @@ function solve!(pep::PEP;
     end
 
 
-
     F_val = value.(F)
     G_val = value.(G)
     _eval_points_and_function_values!(pep, F_val, G_val, verbose)
@@ -590,5 +609,3 @@ function solve!(pep::PEP;
         return wc_value
     end
 end
-
-

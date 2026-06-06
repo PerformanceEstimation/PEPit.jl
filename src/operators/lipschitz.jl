@@ -27,4 +27,3 @@ function add_class_constraints!(op::LipschitzOperator)
 end
 
 _get_pep_func(op::LipschitzOperator) = op._PEPit_func
-

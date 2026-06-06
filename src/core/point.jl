@@ -34,17 +34,13 @@ Base.isequal(p1::Point, p2::Point) = p1._id == p2._id
 get_is_leaf(p::Point) = p._is_leaf
 
 
-
 +(p1::Point, p2::Point) = Point(is_leaf=false, decomposition_dict=prune_dict(merge_dicts(p1.decomposition_dict, p2.decomposition_dict)))
-
 
 
 -(p::Point) = Point(is_leaf=false, decomposition_dict=OrderedDict{Point,Float64}(key => -value for (key, value) in p.decomposition_dict))
 
 
 -(p1::Point, p2::Point) = p1 + (-p2)
-
-
 
 
 *(s::Real, p::Point) = Point(is_leaf=false, decomposition_dict=OrderedDict{Point,Float64}(key => value * s for (key, value) in p.decomposition_dict))
@@ -56,15 +52,10 @@ get_is_leaf(p::Point) = p._is_leaf
 /(p::Point, s::Real) = p * (1 / s)
 
 
-
-
-
 *(p1::Point, p2::Point) = Expression(is_leaf=false, decomposition_dict=multiply_dicts(p1.decomposition_dict, p2.decomposition_dict))
 
 
-
 ^(p::Point, power::Int) = (@assert power == 2; p * p)
-
 
 
 const null_point = Point(is_leaf=false, decomposition_dict=OrderedDict{Point,Float64}())
@@ -75,11 +66,10 @@ function evaluate(p::Point)
     if get_is_leaf(p)
         error("The PEP must be solved to evaluate Points!")
     end
+
     p._value = sum(
         weight * evaluate(point) for (point, weight) in p.decomposition_dict;
         init = zeros(Float64, Point_counter[])
     )
     return p._value
 end
-
-

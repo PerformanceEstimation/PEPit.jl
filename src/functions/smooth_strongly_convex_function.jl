@@ -30,6 +30,4 @@ function add_class_constraints!(func::SmoothStronglyConvexFunction)
 end
 
 
-
 _get_pep_func(f::SmoothStronglyConvexFunction) = f._PEPit_func
-

@@ -20,11 +20,13 @@ add_constraint!(op::NonexpansiveOperator, constraint::Constraint) = add_constrai
 function add_class_constraints!(op::NonexpansiveOperator)
     pts = op._PEPit_func.list_of_points
 
+
     for i in 1:length(pts), j in (i + 1):length(pts)
         xi, gi, _ = pts[i]
         xj, gj, _ = pts[j]
         add_constraint!(op, (gi - gj)^2 - (xi - xj)^2 <= 0)
     end
+
 
     if op.v !== nothing
         for (xi, gi, _) in pts
@@ -34,4 +36,3 @@ function add_class_constraints!(op::NonexpansiveOperator)
 end
 
 _get_pep_func(op::NonexpansiveOperator) = op._PEPit_func
-

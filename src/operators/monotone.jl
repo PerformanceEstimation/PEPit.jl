@@ -20,4 +20,3 @@ function add_class_constraints!(op::MonotoneOperator)
 end
 
 _get_pep_func(op::MonotoneOperator) = op._PEPit_func
-

@@ -12,9 +12,11 @@ mutable struct ConvexIndicatorFunction <: AbstractFunction
         decomposition_dict=nothing,
         reuse_gradient::Bool=false)
         @assert is_leaf
+
         D = haskey(param, "D") ? float(param["D"]) : Inf
         R = haskey(param, "R") ? float(param["R"]) : Inf
         c = haskey(param, "center") ? param["center"] : nothing
+
 
         if c === nothing && R != Inf
             c = Point()
@@ -43,6 +45,7 @@ function add_class_constraints!(f::ConvexIndicatorFunction)
         add_constraint!(f, fi == 0)
     end
 
+
     for point_i in points_list, point_j in points_list
         if point_i === point_j
             continue
@@ -51,6 +54,7 @@ function add_class_constraints!(f::ConvexIndicatorFunction)
         xj, gj, fj = point_j
         add_constraint!(f, 0 >= gj * (xi - xj))
     end
+
 
     if f.D != Inf
         D2 = f.D^2
@@ -63,6 +67,7 @@ function add_class_constraints!(f::ConvexIndicatorFunction)
             add_constraint!(f, (xi - xj)^2 <= D2)
         end
     end
+
 
     if f.R != Inf
         @assert f.center isa Point
@@ -77,4 +82,3 @@ function add_class_constraints!(f::ConvexIndicatorFunction)
 end
 
 _get_pep_func(f::ConvexIndicatorFunction) = f._PEPit_func
-

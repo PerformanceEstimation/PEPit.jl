@@ -7,8 +7,10 @@ mutable struct PSDMatrix
     counter::Int
 
     function PSDMatrix(matrix_of_expressions)
+
         local_counter = PSDMatrix_counter[]
         PSDMatrix_counter[] += 1
+
 
         stored = _store_matrix_of_expressions(matrix_of_expressions)
         shp = size(stored)
@@ -18,8 +20,11 @@ mutable struct PSDMatrix
 end
 
 
+PSDMatrix(; matrix_of_expressions) = PSDMatrix(matrix_of_expressions)
+
 
 function _store_matrix_of_expressions(matrix_of_expressions)
+
 
     mat_any = (
         if matrix_of_expressions isa AbstractMatrix
@@ -44,8 +49,10 @@ function _store_matrix_of_expressions(matrix_of_expressions)
         end
     )
 
+
     n, m = size(mat_any)
     @assert n == m "PSDMatrix requires a square matrix. Got $(n)x$(m)."
+
 
     mat_expr = Array{Expression}(undef, n, n)
     for i in 1:n, j in 1:n
@@ -53,6 +60,7 @@ function _store_matrix_of_expressions(matrix_of_expressions)
         if v isa Expression
             mat_expr[i, j] = v
         elseif v isa Real
+
             mat_expr[i, j] = Expression(v)
         else
             error("PSD matrices contain only Expressions and/or scalar values! Got $(typeof(v)).")
@@ -69,6 +77,7 @@ Base.getindex(psd::PSDMatrix, i::Int, j::Int) = psd.matrix_of_expressions[i, j]
 function evaluate(psd::PSDMatrix)
     if psd._value === nothing
         try
+
             psd._value = map(ex -> evaluate(ex), psd.matrix_of_expressions)
         catch err
             error("The PEP must be solved to evaluate PSDMatrix!")
@@ -84,5 +93,3 @@ function eval_dual(psd::PSDMatrix)
     end
     return psd._dual_variable_value
 end
-
-

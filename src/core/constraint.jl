@@ -14,7 +14,6 @@ mutable struct Constraint <: AbstractConstraint
 end
 
 
-
 Base.:(<=)(e1::Expression, e2::Expression) = Constraint(e1 - e2, "inequality")
 
 Base.:(<=)(e1::Expression, e2::Real)       = Constraint(e1 - e2, "inequality")
@@ -37,12 +36,12 @@ function evaluate(c::Constraint)
         try
             c._value = evaluate(c.expression)
         catch err
+
             error("The PEP must be solved to evaluate Constraints!")
         end
     end
     return c._value
 end
 
+
 eval_dual(c::Constraint) = isnothing(c._dual_variable_value) ? error("PEP must be solved") : c._dual_variable_value
-
-

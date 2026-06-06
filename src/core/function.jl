@@ -36,18 +36,12 @@ mutable struct PEPFunction <: AbstractFunction
 end
 
 
-
 Base.hash(f::PEPFunction, h::UInt) = hash(f._id, h)
 Base.:(==)(f1::PEPFunction, f2::PEPFunction) = f1._id == f2._id
 Base.isequal(f1::PEPFunction, f2::PEPFunction) = f1._id == f2._id
 
 
 _get_pep_func(f::PEPFunction) = f
-
-
-
-
-
 
 
 function +(f1::AbstractFunction, f2::AbstractFunction)
@@ -76,16 +70,13 @@ end
 /(f::AbstractFunction, s::Real) = f * (1 / s)
 
 
-
 function add_class_constraints!(func::PEPFunction)
     error("This method must be overwritten in by a concrete PEPFunction subtype (NotImplementedError)")
 end
 
 
-
 add_constraint!(func::PEPFunction, constraint::Constraint) =
     push!(func.list_of_constraints, constraint)
-
 
 
 function add_psd_matrix!(func::PEPFunction, matrix_of_expressions)
@@ -97,7 +88,6 @@ add_psd_matrix!(f::AbstractFunction, matrix_of_expressions) =
     add_psd_matrix!(_get_pep_func(f), matrix_of_expressions)
 
 
-
 _is_already_evaluated_on_point(func::PEPFunction, point::Point) = begin
     for triplet in func.list_of_points
         if triplet[1].decomposition_dict == point.decomposition_dict
@@ -106,7 +96,6 @@ _is_already_evaluated_on_point(func::PEPFunction, point::Point) = begin
     end
     nothing
 end
-
 
 
 function _separate_leaf_functions_regarding_their_need_on_point(func::PEPFunction, point::Point)
@@ -129,7 +118,7 @@ end
 function add_point!(func::PEPFunction, triplet::Tuple{Point,Point,Expression})
     point, g, f = triplet
     point.decomposition_dict, g.decomposition_dict, f.decomposition_dict =
-        map(prune_dict, (point.decomposition_dict, g.decomposition_dict, f.decomposition_dict)) 
+        map(prune_dict, (point.decomposition_dict, g.decomposition_dict, f.decomposition_dict))
 
     push!(func.list_of_points, triplet)
 
@@ -225,14 +214,12 @@ function stationary_point!(func::PEPFunction; return_gradient_and_function_value
 end
 
 
-
 function fixed_point!(func::PEPFunction)
     x = Point()
     fx = Expression()
     add_point!(func, (x, x, fx))
     return x, x, fx
 end
-
 
 
 oracle!(f::AbstractFunction, p::Point) = oracle!(_get_pep_func(f), p)
@@ -242,5 +229,3 @@ gradient!(f::AbstractFunction, p::Point) = gradient!(_get_pep_func(f), p)
 value!(f::AbstractFunction, p::Point) = value!(_get_pep_func(f), p)
 
 stationary_point!(f::AbstractFunction) = stationary_point!(_get_pep_func(f))
-
-

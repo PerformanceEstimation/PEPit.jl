@@ -35,4 +35,3 @@ end
 
 
 _get_pep_func(f::SmoothFunction) = f._PEPit_func
-

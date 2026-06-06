@@ -28,5 +28,3 @@ function add_class_constraints!(func::ConvexFunction)
 end
 
 _get_pep_func(f::ConvexFunction) = f._PEPit_func
-
-

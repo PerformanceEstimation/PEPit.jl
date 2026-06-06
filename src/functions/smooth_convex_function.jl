@@ -30,4 +30,3 @@ end
 
 
 _get_pep_func(f::SmoothConvexFunction) = f._PEPit_func
-

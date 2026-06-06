@@ -22,6 +22,7 @@ add_constraint!(func::ConvexLipschitzFunction, constraint::Constraint) = add_con
 function add_class_constraints!(func::ConvexLipschitzFunction)
     points_list = func._PEPit_func.list_of_points
 
+
     if func.M != Inf
         M2 = func.M^2
         for point_i in points_list
@@ -29,6 +30,7 @@ function add_class_constraints!(func::ConvexLipschitzFunction)
             add_constraint!(func, gi^2 <= M2)
         end
     end
+
 
     for point_i in points_list, point_j in points_list
         if point_i == point_j
@@ -41,5 +43,3 @@ function add_class_constraints!(func::ConvexLipschitzFunction)
 end
 
 _get_pep_func(f::ConvexLipschitzFunction) = f._PEPit_func
-
-

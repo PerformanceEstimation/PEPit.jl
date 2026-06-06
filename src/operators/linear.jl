@@ -8,6 +8,7 @@ mutable struct LinearOperator <: AbstractFunction
         func = PEPFunction(is_leaf=is_leaf, decomposition_dict=decomposition_dict, reuse_gradient=true)
         L = param["L"]
 
+
         T = PEPFunction(is_leaf=true, reuse_gradient=true)
         T.counter = nothing
         Function_counter[] -= 1
@@ -22,11 +23,13 @@ stationary_point!(op::LinearOperator) = stationary_point!(op._PEPit_func)
 add_constraint!(op::LinearOperator, constraint::Constraint) = add_constraint!(op._PEPit_func, constraint)
 
 function add_class_constraints!(op::LinearOperator)
+
     for (xi, yi, _) in op._PEPit_func.list_of_points
         for (uj, vj, _) in op.T.list_of_points
             add_constraint!(op, xi * vj == yi * uj)
         end
     end
+
 
     N1 = length(op._PEPit_func.list_of_points)
     if N1 > 0
@@ -38,6 +41,7 @@ function add_class_constraints!(op::LinearOperator)
         end
         push!(op._PEPit_func.list_of_class_psd, PSDMatrix(matrix_of_expressions=T1))
     end
+
 
     N2 = length(op.T.list_of_points)
     if N2 > 0
@@ -52,4 +56,3 @@ function add_class_constraints!(op::LinearOperator)
 end
 
 _get_pep_func(op::LinearOperator) = op._PEPit_func
-

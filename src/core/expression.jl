@@ -30,6 +30,7 @@ Base.isequal(e1::Expression, e2::Expression) = e1._id == e2._id
 
 Base.:(==)(e1::Expression, e2::Expression) = Constraint(e1 - e2, "equality")
 
+
 Base.isequal(::Expression, ::Real) = false
 Base.isequal(::Real, ::Expression) = false
 Base.isequal(::Expression, ::Tuple{Point,Point}) = false
@@ -81,7 +82,6 @@ Base.:(>)(a::Expression, b::Real) = (@warn "[⚠️] Strict constraints lead to 
 Base.:(>)(a::Real, b::Expression) = (@warn "[⚠️] Strict constraints lead to same solution"; a >= b)
 
 
-
 const null_expression = Expression(
     is_leaf=false,
     decomposition_dict=OrderedDict{Any,Float64}()
@@ -97,6 +97,7 @@ function evaluate(e::Expression)
     for (key, weight) in e.decomposition_dict
         if key isa Expression
             @assert get_is_leaf(key) "[💀] Non-leaf Expression used as a key; only leaf function values are allowed."
+
             val += weight * evaluate(key)
 
         elseif key isa Tuple{Point,Point}
@@ -114,6 +115,3 @@ function evaluate(e::Expression)
     e._value = val
     return val
 end
-
-
-
