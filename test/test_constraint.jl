@@ -1,30 +1,40 @@
 using Test
 
 @testset "Constraints" begin
+
     Point_counter[] = 0
     Expression_counter[] = 0
     Function_counter[] = 0
     Global_Constraint_counter[] = 0
     NEXT_ID[] = 0
 
+
     L = 1.0
     mu = 0.1
     gamma = 1 / L
 
+
     problem = PEP()
+
 
     param = OrderedDict("L" => L, "mu" => mu)
     func = declare_function!(problem, SmoothStronglyConvexFunction, param)
 
+
     xs = stationary_point!(func)
+
 
     x0 = set_initial_point!(problem)
 
+
     set_initial_condition!(problem, (x0 - xs)^2 <= 1)
+
 
     x1 = x0 - gamma * gradient!(func, x0)
 
+
     set_performance_metric!(problem, (x1 - xs)^2)
+
 
     solution = solve!(problem; verbose=false)
 
@@ -52,9 +62,11 @@ using Test
         @test x0.counter == 1
         @test x1.counter === nothing
 
+
         for (i, constraint) in enumerate(problem.list_of_conditions)
             @test constraint.counter == i - 1
         end
+
 
         for (i, constraint) in enumerate(func._PEPit_func.list_of_constraints)
             @test constraint.counter == (i - 1) + length(problem.list_of_conditions)
@@ -100,6 +112,7 @@ using Test
 end
 
 @testset "Constraints: logdet heuristic" begin
+
     Point_counter[] = 0
     Expression_counter[] = 0
     Function_counter[] = 0
@@ -121,12 +134,13 @@ end
         p
     end
 
+
     pb_base = build_problem()
     τ_base = solve!(pb_base; verbose=false)
+
 
     pb_logdet = build_problem()
     τ_logdet = solve!(pb_logdet; verbose=false, logdetiters=10, eig_regularization=1e-3, tol_dimension_reduction=1e-5)
 
     @test isapprox(τ_logdet, τ_base; atol=1e-6, rtol=1e-3)
 end
-

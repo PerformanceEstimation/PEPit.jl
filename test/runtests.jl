@@ -1,8 +1,6 @@
-# test/runtests.jl
-
 using PEPit
 using Test
-using OrderedCollections # Needed for the test data
+using OrderedCollections
 using JuMP, Mosek, MosekTools
 
 @info "💻 Running PEPit.jl tests!"
@@ -15,6 +13,7 @@ ts = @testset verbose=true "PEPit.jl" begin
     include("test_function.jl")
     include("test_point.jl")
     include("test_pep.jl")
+    include("test_additions.jl")
 end
 
 if !ts.anynonpass

@@ -1,5 +1,6 @@
 using Test
 
+
 function reset_counters!()
     Point_counter[] = 0
     Expression_counter[] = 0
@@ -9,6 +10,7 @@ function reset_counters!()
 end
 
 @testset "PEPFunction Tests" begin
+
 
     function setup_test()
         reset_counters!()
@@ -62,6 +64,7 @@ end
         new_function = compute_linear_combination(func1, func2)
         oracle!(new_function, point)
 
+
         @test length(new_function.list_of_points) == 1
 
         point_result, grad, val = new_function.list_of_points[1]
@@ -73,6 +76,7 @@ end
         @test get_is_leaf(grad)
         @test get_is_leaf(val)
 
+
         @test length(func1.list_of_points) == 1
 
         point1, grad1, val1 = func1.list_of_points[1]
@@ -83,6 +87,7 @@ end
         @test get_is_leaf(grad1)
         @test get_is_leaf(val1)
 
+
         @test length(func2._PEPit_func.list_of_points) == 1
 
         point2, grad2, val2 = func2._PEPit_func.list_of_points[1]
@@ -92,6 +97,7 @@ end
 
         @test !get_is_leaf(grad2)
         @test !get_is_leaf(val2)
+
 
         @test point1 === point
         @test point2 === point
@@ -105,29 +111,38 @@ end
     @testset "Oracle with Predetermined Values" begin
         pep, func1, func2, point = setup_test()
 
+
         new_function = compute_linear_combination(func1, func2)
+
 
         grad1, val1 = oracle!(func1, point)
         grad2, val2 = oracle!(func2._PEPit_func, point)
 
+
         @test length(func1.list_of_points) == 1
         @test length(func2._PEPit_func.list_of_points) == 1
 
+
         grad, val = oracle!(new_function, point)
+
 
         expected_val_dict = prune_dict((-1 * val1 + 9 / 5 * val2).decomposition_dict)
         expected_grad_dict = prune_dict((-1 * grad1 + 9 / 5 * grad2).decomposition_dict)
         @test prune_dict(val.decomposition_dict) == expected_val_dict
         @test prune_dict(grad.decomposition_dict) != expected_grad_dict
 
+
         @test length(func1.list_of_points) == 2
         @test length(func2._PEPit_func.list_of_points) == 2
+
 
         other_grad1, other_val1 = func1.list_of_points[2][2:3]
         other_grad2, other_val2 = func2._PEPit_func.list_of_points[2][2:3]
 
+
         @test val1.decomposition_dict == other_val1.decomposition_dict
         @test val2.decomposition_dict == other_val2.decomposition_dict
+
 
         expected_new_grad_dict = prune_dict((-1 * other_grad1 + 9 / 5 * other_grad2).decomposition_dict)
         @test prune_dict(grad.decomposition_dict) == expected_new_grad_dict
@@ -136,25 +151,33 @@ end
     @testset "Oracle with Predetermined Values and Gradients" begin
         pep, func1, func2, point = setup_test()
 
+
         func1.reuse_gradient = true
         func2._PEPit_func.reuse_gradient = true
 
+
         new_function = compute_linear_combination(func1, func2)
 
+
         @test new_function.reuse_gradient
+
 
         grad1, val1 = oracle!(func1, point)
         grad2, val2 = oracle!(func2._PEPit_func, point)
 
+
         @test length(func1.list_of_points) == 1
         @test length(func2._PEPit_func.list_of_points) == 1
 
+
         grad, val = oracle!(new_function, point)
+
 
         expected_val_dict = prune_dict((-1 * val1 + 9 / 5 * val2).decomposition_dict)
         expected_grad_dict = prune_dict((-1 * grad1 + 9 / 5 * grad2).decomposition_dict)
         @test prune_dict(val.decomposition_dict) == expected_val_dict
         @test prune_dict(grad.decomposition_dict) == expected_grad_dict
+
 
         @test length(func1.list_of_points) == 1
         @test length(func2._PEPit_func.list_of_points) == 1
@@ -163,8 +186,10 @@ end
     @testset "Stationary Point Tests" begin
         pep, func1, func2, point = setup_test()
 
+
         new_function = compute_linear_combination(func1, func2)
         stationary_point!(new_function)
+
 
         @test length(new_function.list_of_points) == 1
 
@@ -182,6 +207,7 @@ end
 
         @test length(new_function.list_of_stationary_points) == 1
 
+
         @test length(func1.list_of_points) == 1
 
         point1, grad1, val1 = func1.list_of_points[1]
@@ -194,6 +220,7 @@ end
 
         @test length(func1.list_of_stationary_points) == 0
 
+
         @test length(func2._PEPit_func.list_of_points) == 1
 
         point2, grad2, val2 = func2._PEPit_func.list_of_points[1]
@@ -205,6 +232,7 @@ end
         @test !get_is_leaf(val2)
 
         @test length(func2._PEPit_func.list_of_stationary_points) == 0
+
 
         @test point1 === point_result
         @test point2 === point_result
@@ -220,11 +248,14 @@ end
 
         new_function = compute_linear_combination(func1, func2)
 
+
         @test _is_already_evaluated_on_point(new_function, point) === nothing
         @test _is_already_evaluated_on_point(func1, point) === nothing
         @test _is_already_evaluated_on_point(func2._PEPit_func, point) === nothing
 
+
         oracle!(new_function, point)
+
 
         @test _is_already_evaluated_on_point(new_function, point) == new_function.list_of_points[1][2:3]
         @test _is_already_evaluated_on_point(func1, point) == func1.list_of_points[1][2:3]
@@ -233,6 +264,7 @@ end
 
     @testset "Separate Leaf Functions - Non-differentiable" begin
         pep, func1, func2, point = setup_test()
+
 
         new_function = compute_linear_combination(func1, func2)
         point1 = Point(is_leaf=true, decomposition_dict=nothing)
@@ -253,6 +285,7 @@ end
     @testset "Separate Leaf Functions - Differentiable" begin
         reset_counters!()
 
+
         new_function = PEPFunction(is_leaf=true, decomposition_dict=nothing, reuse_gradient=true)
         point1 = Point(is_leaf=true, decomposition_dict=nothing)
         point2 = Point(is_leaf=true, decomposition_dict=nothing)
@@ -270,4 +303,3 @@ end
     end
 
 end
-
