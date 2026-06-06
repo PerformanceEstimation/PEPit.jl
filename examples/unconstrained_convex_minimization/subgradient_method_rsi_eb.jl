@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_subgradient_method_rsi_eb(mu, L, gamma, n; solver=Mosek.Optimizer, verbose=true)
+function wc_subgradient_method_rsi_eb(mu, L, gamma, n; solver=Clarabel.Optimizer, verbose=true)
     problem = PEP()
 
 
@@ -43,4 +43,4 @@ end
 
 mu = 0.1
 L = 1.0
-pepit_tau, theoretical_tau = wc_subgradient_method_rsi_eb(mu, L, mu / L^2, 4; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_subgradient_method_rsi_eb(mu, L, mu / L^2, 4; solver=Clarabel.Optimizer, verbose=true)

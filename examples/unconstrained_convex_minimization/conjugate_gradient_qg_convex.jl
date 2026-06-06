@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_conjugate_gradient_qg_convex(L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_conjugate_gradient_qg_convex(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -48,4 +48,4 @@ function wc_conjugate_gradient_qg_convex(L, n; solver=Mosek.Optimizer, verbose=t
     return pepit_tau, theoretical_tau
 end
 
-pepit_tau, theoretical_tau = wc_conjugate_gradient_qg_convex(1.0, 12; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_conjugate_gradient_qg_convex(1.0, 12; solver=Clarabel.Optimizer, verbose=true)

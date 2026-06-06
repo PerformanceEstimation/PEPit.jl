@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_information_theoretic(mu, L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_information_theoretic(mu, L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -55,4 +55,4 @@ function wc_information_theoretic(mu, L, n; solver=Mosek.Optimizer, verbose=true
     return pepit_tau, theoretical_tau
 end
 
-pepit_tau, theoretical_tau = wc_information_theoretic(0.001, 1.0, 15; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_information_theoretic(0.001, 1.0, 15; solver=Clarabel.Optimizer, verbose=true)

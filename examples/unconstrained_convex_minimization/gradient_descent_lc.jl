@@ -1,4 +1,4 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
 
 function _fsolve_scalar(fun, x0; xtol=1e-10, maxiter=200)
@@ -15,7 +15,7 @@ function _fsolve_scalar(fun, x0; xtol=1e-10, maxiter=200)
     return x
 end
 
-function wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, gamma, n; solver=Mosek.Optimizer, verbose=true)
+function wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, gamma, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 

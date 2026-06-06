@@ -1,4 +1,4 @@
-function _gd1_value(f, problem, xs, fs; step=0.1, solver=Mosek.Optimizer)
+function _gd1_value(f, problem, xs, fs; step=0.1, solver=Clarabel.Optimizer)
     x0 = set_initial_point!(problem)
     set_initial_condition!(problem, (x0 - xs)^2 <= 1.0)
     g0 = gradient!(f, x0)
@@ -8,7 +8,7 @@ function _gd1_value(f, problem, xs, fs; step=0.1, solver=Mosek.Optimizer)
 end
 
 
-function _op1_dist(A, problem; step=0.3, solver=Mosek.Optimizer)
+function _op1_dist(A, problem; step=0.3, solver=Clarabel.Optimizer)
     xs = stationary_point!(A)
     x0 = set_initial_point!(problem)
     set_initial_condition!(problem, (x0 - xs)^2 <= 1.0)

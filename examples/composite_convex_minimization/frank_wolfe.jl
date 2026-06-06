@@ -2,6 +2,7 @@ using PEPit
 using OrderedCollections
 
 function wc_frank_wolfe(L, D, R, center, n; verbose::Bool=true)
+
     problem = PEP()
 
 
@@ -9,15 +10,20 @@ function wc_frank_wolfe(L, D, R, center, n; verbose::Bool=true)
     f2 = declare_function!(problem, ConvexIndicatorFunction,
         OrderedDict("D" => D, "R" => R, "center" => center); reuse_gradient=false)
 
+
     F = f1 + f2
+
 
     xs = stationary_point!(F)
     fs = value!(F, xs)
 
+
     x0 = set_initial_point!(problem)
+
 
     _ = value!(f1, x0)
     _ = value!(f2, x0)
+
 
     x = x0
     for t in 0:(n-1)
@@ -27,9 +33,12 @@ function wc_frank_wolfe(L, D, R, center, n; verbose::Bool=true)
         x = (1 - λ) * x + λ * y
     end
 
+
     set_performance_metric!(problem, value!(F, x) - fs)
 
+
     PEPit_tau = solve!(problem; verbose=verbose)
+
 
     theoretical_tau = 2 * L * D^2 / (n + 2)
 
@@ -45,4 +54,3 @@ function wc_frank_wolfe(L, D, R, center, n; verbose::Bool=true)
 end
 
 PEPit_tau, theoretical_tau = wc_frank_wolfe(1.0, 1.0, Inf, nothing, 10; verbose=true)
-

@@ -4,15 +4,19 @@ using OrderedCollections
 function wc_accelerated_gradient_method(L, gamma, lam; verbose=true)
     problem = PEP()
 
+
     param = OrderedDict("L" => L)
     func = declare_function!(problem, SmoothConvexFunction, param; reuse_gradient=true)
+
 
     xs = stationary_point!(func)
     fs = value!(func, xs)
 
+
     xn = set_initial_point!(problem)
     _gn, fn = oracle!(func, xn)
     zn = set_initial_point!(problem)
+
 
     lam_np1 = (1 + sqrt(4 * lam^2 + 1)) / 2
     tau = 1 / lam_np1
@@ -24,6 +28,7 @@ function wc_accelerated_gradient_method(L, gamma, lam; verbose=true)
 
     xnp1 = yn - gamma * gyn
     _gnp1, fnp1 = oracle!(func, xnp1)
+
 
     final_lyapunov = lam_np1^2 * (fnp1 - fs) + L / 2 * (znp1 - xs)^2
     init_lyapunov = lam^2 * (fn - fs) + L / 2 * (zn - xs)^2
@@ -47,5 +52,3 @@ end
 
 
 pepit_tau, theoretical_tau = wc_accelerated_gradient_method(1.0, 1.0, 10.0; verbose=true)
-
-

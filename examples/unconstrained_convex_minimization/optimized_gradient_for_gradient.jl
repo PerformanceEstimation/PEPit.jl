@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools, OffsetArrays
+using PEPit, OrderedCollections, Clarabel, OffsetArrays
 
-function wc_optimized_gradient_for_gradient(L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_optimized_gradient_for_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -62,4 +62,4 @@ function wc_optimized_gradient_for_gradient(L, n; solver=Mosek.Optimizer, verbos
     return pepit_tau, theoretical_tau
 end
 
-pepit_tau, theoretical_tau = wc_optimized_gradient_for_gradient(3.0, 4; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_optimized_gradient_for_gradient(3.0, 4; solver=Clarabel.Optimizer, verbose=true)

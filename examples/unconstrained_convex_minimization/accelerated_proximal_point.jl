@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_accelerated_proximal_point(A0, gammas, n; solver=Mosek.Optimizer, verbose=true)
+function wc_accelerated_proximal_point(A0, gammas, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -53,4 +53,4 @@ function wc_accelerated_proximal_point(A0, gammas, n; solver=Mosek.Optimizer, ve
 end
 
 
-pepit_tau, theoretical_tau = wc_accelerated_proximal_point(5, [(i + 1) / 1.1 for i in 0:2], 3; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_accelerated_proximal_point(5, [(i + 1) / 1.1 for i in 0:2], 3; solver=Clarabel.Optimizer, verbose=true)

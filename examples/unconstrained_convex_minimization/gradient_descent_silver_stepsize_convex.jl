@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_gradient_descent_silver_stepsize_convex(L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_gradient_descent_silver_stepsize_convex(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     k = log2(n + 1)
     if !isinteger(k)
@@ -59,4 +59,4 @@ function wc_gradient_descent_silver_stepsize_convex(L, n; solver=Mosek.Optimizer
 end
 
 
-pepit_tau, theoretical_tau = wc_gradient_descent_silver_stepsize_convex(10.0, 7; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_gradient_descent_silver_stepsize_convex(10.0, 7; solver=Clarabel.Optimizer, verbose=true)

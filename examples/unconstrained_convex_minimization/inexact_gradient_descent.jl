@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_inexact_gradient_descent(L, mu, epsilon, n; solver=Mosek.Optimizer, verbose=true)
+function wc_inexact_gradient_descent(L, mu, epsilon, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -48,4 +48,4 @@ function wc_inexact_gradient_descent(L, mu, epsilon, n; solver=Mosek.Optimizer, 
 end
 
 
-pepit_tau, theoretical_tau = wc_inexact_gradient_descent(1.0, 0.1, 0.1, 2; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_inexact_gradient_descent(1.0, 0.1, 0.1, 2; solver=Clarabel.Optimizer, verbose=true)

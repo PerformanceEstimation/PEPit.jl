@@ -4,19 +4,24 @@ using OrderedCollections
 function wc_improved_interior_algorithm(L, mu, c, lam, n; verbose=true)
     problem = PEP()
 
+
     func1 = declare_function!(problem, SmoothConvexFunction, OrderedDict("L" => L); reuse_gradient=true)
     func2 = declare_function!(problem, ConvexIndicatorFunction, OrderedDict("D" => Inf); reuse_gradient=false)
     h = declare_function!(problem, StronglyConvexFunction, OrderedDict("mu" => mu); reuse_gradient=true)
 
+
     func = func1 + func2
+
 
     xs = stationary_point!(func)
     fs = value!(func, xs)
     ghs, hs = oracle!(h, xs)
 
+
     x0 = set_initial_point!(problem)
     gh0, h0 = oracle!(h, x0)
     g10, f10 = oracle!(func1, x0)
+
 
     x = x0
     z = x0
@@ -35,7 +40,9 @@ function wc_improved_interior_algorithm(L, mu, c, lam, n; verbose=true)
         gh, _ = oracle!(h, z)
     end
 
+
     set_initial_condition!(problem, (hs - h0 - gh0 * (xs - x0)) * c + f10 - fs <= 1)
+
 
     set_performance_metric!(problem, value!(func, x) - fs)
 
@@ -53,5 +60,3 @@ end
 
 
 pepit_tau, theoretical_tau = wc_improved_interior_algorithm(1.0, 1.0, 1.0, 1.0, 5; verbose=true)
-
-

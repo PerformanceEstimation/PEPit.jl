@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_gradient_descent_silver_stepsize_strongly_convex(L, mu, n; solver=Mosek.Optimizer, verbose=true)
+function wc_gradient_descent_silver_stepsize_strongly_convex(L, mu, n; solver=Clarabel.Optimizer, verbose=true)
 
 
     if !isinteger(log2(n))

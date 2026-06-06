@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_heavy_ball_momentum(mu, L, alpha, beta, n; solver=Mosek.Optimizer, verbose=true)
+function wc_heavy_ball_momentum(mu, L, alpha, beta, n; solver=Clarabel.Optimizer, verbose=true)
     problem = PEP()
 
 

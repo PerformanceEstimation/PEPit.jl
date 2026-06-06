@@ -4,19 +4,25 @@ using OrderedCollections
 function wc_polyak_steps_in_function_value(L, mu, gamma; verbose=true)
     problem = PEP()
 
+
     func = declare_function!(problem, SmoothStronglyConvexFunction, OrderedDict("L" => L, "mu" => mu); reuse_gradient=true)
+
 
     xs = stationary_point!(func)
     fs = value!(func, xs)
 
+
     x0 = set_initial_point!(problem)
     g0, f0 = oracle!(func, x0)
+
 
     set_initial_condition!(problem, f0 - fs <= 1)
     add_constraint!(problem, g0^2 == 2 * L * (2 - L * gamma) * (f0 - fs))
 
+
     x1 = x0 - gamma * g0
     g1, f1 = oracle!(func, x1)
+
 
     set_performance_metric!(problem, f1 - fs)
 
@@ -37,6 +43,3 @@ end
 
 
 pepit_tau, theoretical_tau = wc_polyak_steps_in_function_value(1.0, 0.1, 2 / (1 + 0.1); verbose=true)
-
-
-

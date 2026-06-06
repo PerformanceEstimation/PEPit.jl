@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_epsilon_subgradient_method(M, n, gamma, eps, R; solver=Mosek.Optimizer, verbose=true)
+function wc_epsilon_subgradient_method(M, n, gamma, eps, R; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 

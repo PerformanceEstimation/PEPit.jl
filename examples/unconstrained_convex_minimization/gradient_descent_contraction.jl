@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_gradient_descent_contraction(L, mu, gamma, n; solver=Mosek.Optimizer, verbose=true)
+function wc_gradient_descent_contraction(L, mu, gamma, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 

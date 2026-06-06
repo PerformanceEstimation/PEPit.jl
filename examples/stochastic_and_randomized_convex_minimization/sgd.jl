@@ -4,16 +4,21 @@ using OrderedCollections
 function wc_sgd(L, mu, gamma, v, R, n; verbose=true)
     problem = PEP()
 
+
     fn = [declare_function!(problem, SmoothStronglyConvexFunction, OrderedDict("L" => L, "mu" => mu); reuse_gradient=true) for _ in 1:n]
     func = sum(fn) / n
 
+
     xs = stationary_point!(func)
 
+
     x0 = set_initial_point!(problem)
+
 
     var = sum(gradient!(f, xs)^2 for f in fn) / n
     add_constraint!(problem, var <= v^2)
     set_initial_condition!(problem, (x0 - xs)^2 <= R^2)
+
 
     distavg = sum((x0 - gamma * gradient!(f, x0) - xs)^2 for f in fn) / n
 
@@ -34,5 +39,3 @@ end
 
 
 pepit_tau, theoretical_tau = wc_sgd(1.0, 0.1, 0.7, 1.0, 2.0, 5; verbose=true)
-
-

@@ -1,7 +1,7 @@
 using PEPit
 using Test
 using OrderedCollections
-using JuMP, Mosek, MosekTools
+using JuMP, Clarabel
 
 @info "💻 Running PEPit.jl tests!"
 

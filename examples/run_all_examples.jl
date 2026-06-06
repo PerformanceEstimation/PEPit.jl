@@ -2,13 +2,13 @@ using PrettyTables
 using Printf
 
 function run_all_julia_files(start_dir::String;
-    backend::Symbol = :text,          # :text, :markdown, :html, :latex
+    backend::Symbol = :text,
     show_table::Bool = true,
     gc_before_each::Bool = false,
 )
     results = NamedTuple{(:file, :path, :time_s, :alloc_bytes, :success), Tuple{String, String, Float64, Int, Bool}}[]
 
-    # Wrap include so @timed always returns stats (even if the file errors)
+
     safe_include(path::AbstractString) = try
         include(path)
         (true, nothing)
@@ -17,7 +17,7 @@ function run_all_julia_files(start_dir::String;
     end
 
     for (root, dirs, files) in walkdir(start_dir)
-        sort!(dirs)   # deterministic traversal order
+        sort!(dirs)
         sort!(files)
 
         for file in files
@@ -59,7 +59,7 @@ function run_all_julia_files(start_dir::String;
         for (i, r) in enumerate(results)
             data[i, 1] = r.file
             data[i, 2] = @sprintf("%.3f", r.time_s)
-            data[i, 3] = @sprintf("%.3f", r.alloc_bytes / (1024.0^2))  # MiB
+            data[i, 3] = @sprintf("%.3f", r.alloc_bytes / (1024.0^2))
             data[i, 4] = r.success ? "Yes" : "No"
         end
 
@@ -74,15 +74,3 @@ function run_all_julia_files(start_dir::String;
 
     return results
 end
-
-# Example:
-# run_all_julia_files(".")
-
-
-# Example:
-# run_all_julia_files(".")
-
-
-# Usage: Replace with your folder path
-# Use "." for the current directory
-# run_all_julia_files("./path/to/your/folder");

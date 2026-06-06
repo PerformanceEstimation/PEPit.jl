@@ -4,17 +4,22 @@ using OrderedCollections
 function wc_bregman_proximal_point(gamma, n; verbose=true)
     problem = PEP()
 
+
     f1 = declare_function!(problem, ConvexFunction, OrderedDict(); reuse_gradient=false)
     f2 = declare_function!(problem, ConvexFunction, OrderedDict(); reuse_gradient=false)
+
 
     xs = stationary_point!(f1)
     fs = value!(f1, xs)
     gf2s, f2s = oracle!(f2, xs)
 
+
     x0 = set_initial_point!(problem)
     gf20, f20 = oracle!(f2, x0)
 
+
     set_initial_condition!(problem, f2s - f20 - gf20 * (xs - x0) <= 1)
+
 
     sx = gf20
     local f1_val::Expression
@@ -22,9 +27,12 @@ function wc_bregman_proximal_point(gamma, n; verbose=true)
         x, sx, f2x, g1x, f1_val = bregman_proximal_step!(sx, f2, f1, gamma)
     end
 
+
     set_performance_metric!(problem, f1_val - fs)
 
+
     PEPit_tau = solve!(problem; verbose=verbose)
+
 
     theoretical_tau = 1 / (gamma * n)
 
@@ -37,5 +45,5 @@ function wc_bregman_proximal_point(gamma, n; verbose=true)
     return PEPit_tau, theoretical_tau
 end
 
-PEPit_tau, theoretical_tau = wc_bregman_proximal_point(3.0, 5; verbose=true)
 
+PEPit_tau, theoretical_tau = wc_bregman_proximal_point(3.0, 5; verbose=true)

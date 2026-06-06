@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_accelerated_gradient_convex(mu, L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_accelerated_gradient_convex(mu, L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -54,4 +54,4 @@ function wc_accelerated_gradient_convex(mu, L, n; solver=Mosek.Optimizer, verbos
     return pepit_tau, theoretical_tau
 end
 
-pepit_tau, theoretical_tau = wc_accelerated_gradient_convex(0, 1, 1; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_accelerated_gradient_convex(0, 1, 1; solver=Clarabel.Optimizer, verbose=true)

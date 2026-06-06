@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_conjugate_gradient(L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_conjugate_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -56,4 +56,4 @@ function wc_conjugate_gradient(L, n; solver=Mosek.Optimizer, verbose=true)
     return pepit_tau, theoretical_tau
 end
 
-pepit_tau, theoretical_tau = wc_conjugate_gradient(1.0, 2; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_conjugate_gradient(1.0, 2; solver=Clarabel.Optimizer, verbose=true)

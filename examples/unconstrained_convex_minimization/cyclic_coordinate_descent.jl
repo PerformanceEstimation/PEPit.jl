@@ -1,6 +1,6 @@
-using PEPit, OrderedCollections, Mosek, MosekTools
+using PEPit, OrderedCollections, Clarabel
 
-function wc_cyclic_coordinate_descent(L, n; solver=Mosek.Optimizer, verbose=true)
+function wc_cyclic_coordinate_descent(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()
 
@@ -48,4 +48,4 @@ end
 
 
 L = [1.0, 2.0, 10.0]
-pepit_tau, theoretical_tau = wc_cyclic_coordinate_descent(L, 9; solver=Mosek.Optimizer, verbose=true)
+pepit_tau, theoretical_tau = wc_cyclic_coordinate_descent(L, 9; solver=Clarabel.Optimizer, verbose=true)
