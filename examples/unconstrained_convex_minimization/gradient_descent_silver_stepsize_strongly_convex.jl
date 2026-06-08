@@ -1,5 +1,86 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_gradient_descent_silver_stepsize_strongly_convex(L, mu, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_gradient_descent_silver_stepsize_strongly_convex`.
+
+Consider the strongly convex minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and $\mu$ strongly-convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for $n$ steps of the **gradient descent** method tuned
+according to the silver stepsize schedule.
+That is, it computes the smallest possible $\tau(n, L, \mu)$ such that the guarantee
+
+```math
+\|x_n - x_\star\|^2 \leqslant \tau(n, L, \mu) \|x_0 - x_\star\|^2
+```
+
+is valid, where $x_n$ is the output of gradient descent using the silver stepsizes, and
+where $x_\star$ is a minimizer of $f$.
+
+In short, for given values of $n$, $L$ and $\mu$, $\tau(n, L, \mu)$ is computed
+as the worst-case value of $\|x_n - x_\star\|^2$ when $\|x_0 - x_\star\|^2 \leqslant 1$.
+
+# Algorithm
+
+Gradient descent is described by
+
+```math
+x_{t+1} = x_t - \gamma_t \nabla f(x_t),
+```
+
+where $\gamma_t$ is a step-size of the $t^{th}$ step of the silver step-size schedule described in [1].
+
+# Theoretical guarantee
+
+The theoretical guarantee for the convergence rate of the silver stepsize can be found in [1, Theorem 4.1]:
+Let $n^\star = 2^{\lfloor log_\rho(L/(3\mu)) \rfloor}$.
+
+When $n \leq n^\star$, the guarantee is given by
+
+```math
+\|x_n - x_\star\|^2 \leqslant e^{-\frac{n^{\log_2(1 + \sqrt{2})}}{L/\mu}} \|x_0-x_\star\|^2,
+```
+
+When $n > n^\star$ the guarantee is given by
+
+```math
+\|x_n - x_\star\|^2 \leqslant e^{-\frac{n}{n^*} \frac{(n^*)^{\log_2(\rho)}}{L/\mu}} \|x_0-x_\star\|^2
+```
+
+# References
+
+
+[[1] J. M. Altschuler, P. A. Parrilo (2023).
+Acceleration by Stepsize Hedging I: Multi-Step Descent and the Silver Stepsize Schedule.
+arXiv preprint arXiv:2309.07879.](https://arxiv.org/abs/2309.07879)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `mu`: strong convexity or monotonicity parameter, as used by the modeled class.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_gradient_descent_silver_stepsize_strongly_convex(3.2, 0.1, 8; verbose=true)
+```
+"""
 function wc_gradient_descent_silver_stepsize_strongly_convex(L, mu, n; solver=Clarabel.Optimizer, verbose=true)
 
 

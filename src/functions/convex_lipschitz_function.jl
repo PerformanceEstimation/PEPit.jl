@@ -1,3 +1,30 @@
+@doc raw"""
+    ConvexLipschitzFunction(param; <keyword arguments>)
+
+Represent the `ConvexLipschitzFunction` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of convex closed proper (CCP)
+Lipschitz continuous functions.
+
+# Class parameters
+- `M`: Lipschitz parameter
+
+CCP Lipschitz continuous functions are characterized by a parameter `M`, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, ConvexLipschitzFunction, param)
+```
+
+# Fields
+- `M`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct ConvexLipschitzFunction <: AbstractFunction
     M::Float64
     _PEPit_func::PEPFunction

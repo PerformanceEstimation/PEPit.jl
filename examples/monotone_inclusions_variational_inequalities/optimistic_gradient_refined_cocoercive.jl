@@ -1,5 +1,78 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_optimistic_gradient_refined_cocoercive(n, gamma, beta; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_optimistic_gradient_refined_cocoercive`.
+
+Consider the monotone variational inequality
+
+```math
+\mathrm{Find}\, x_\star \in C\text{ such that } \left<F(x_\star);x-x_\star\right> \geqslant 0\,\,\forall x\in C,
+```
+
+where $C$ is a closed convex set and $F$ is maximally monotone and cocoercive.
+In this example, we use the characterization of cocoercive strongly monotone operators
+provided in [3, Proposition F.3] (which results in more computationnaly expensive PEPs to be solved).
+
+# Performance metric
+
+This code computes a worst-case guarantee for the **optimistic gradient method**.
+That, it computes the smallest possible $\tau(n)$ such that the guarantee
+
+```math
+\|\tilde{x}_n - \tilde{x}_{n-1}\|^2 \leqslant \tau(n) \|x_0 - x_\star\|^2,
+```
+
+is valid, where $\tilde{x}_n$ is the output of the **optimistic gradient method**
+and $x_0$ its starting point.
+
+# Algorithm
+The optimistic gradient method is described as follows, for $t \in \{ 0, \dots, n-1\}$,
+
+```math
+    \begin{aligned}
+         \tilde{x}_{t} & = & \mathrm{Proj}_{C} [x_t-\gamma F(\tilde{x}_{t-1})], \\
+         {x}_{t+1} & = & \tilde{x}_t + \gamma (F(\tilde{x}_{t-1}) - F(\tilde{x}_t)).
+    \end{aligned}
+```
+where $\gamma$ is some step-size.
+
+# Theoretical guarantee
+The method and many variants of it are discussed in [1] and a PEP formulation suggesting
+a worst-case guarantee in $O(1/n)$ (when $\mu=0$) can be found in [2, Appendix D].
+
+# References
+
+
+[[1] Y.-G. Hsieh, F. Iutzeler, J. Malick, P. Mertikopoulos (2019).
+On the convergence of single-call stochastic extra-gradient methods.
+Advances in Neural Information Processing Systems, 32:6938-6948, 2019](https://arxiv.org/pdf/1908.08465.pdf)
+
+[[2] E. Gorbunov, A. Taylor, G. Gidel (2022).
+Last-Iterate Convergence of Optimistic Gradient Method for Monotone Variational Inequalities.](https://arxiv.org/pdf/2205.08446.pdf)
+
+[[3] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+A constructive approach to strengthen algebraic descriptions of function and operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+# Arguments
+- `n`: number of iterations.
+- `gamma`: step-size parameter.
+- `beta`: operator or algorithm parameter used in the model.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value.
+- `theoretical_tau`: no theoretical bound.
+
+# Julia usage
+```julia
+wc_optimistic_gradient_refined_cocoercive(1, 1 / 4, 1 / 4; verbose=true)
+```
+"""
 function wc_optimistic_gradient_refined_cocoercive(n, gamma, beta; solver=Clarabel.Optimizer, verbose=true)
 
 

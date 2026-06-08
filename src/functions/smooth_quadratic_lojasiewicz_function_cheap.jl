@@ -1,3 +1,43 @@
+@doc raw"""
+    SmoothQuadraticLojasiewiczFunctionCheap(param; reuse_gradient=true)
+
+Represent the `SmoothQuadraticLojasiewiczFunctionCheap` interpolation class in PEPit.jl.
+
+Implement some constraints (which are not necessary and sufficient for interpolation)
+for the class of smooth (not necessarily convex) functions that also satisfy a quadratic Lojasiewicz inequality
+(sometimes also referred to as a Polyak-Lojasiewicz inequality). Extensive descriptions of such classes of
+functions can be found in [1, 2].
+
+The conditions implemented here are presented in [4, Proposition 3.2] (for alpha to be chosen)
+and [4, Proposition 3.4] with smoothness conditions from [3].
+
+# Warning
+
+    Smooth functions satisfying a Lojasiewicz property do not enjoy known interpolation conditions.
+    The conditions implemented in this class are necessary but a priori not sufficient for interpolation.
+    Hence, the numerical results obtained when using this class might be non-tight upper bounds.
+
+# Class parameters
+- `L`: smoothness parameter
+- `mu`: quadratic Lojasiewicz parameter
+- `alpha`: relaxation parameter (in [0,2*mu/(2*L+mu)])
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, SmoothQuadraticLojasiewiczFunctionCheap, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `alpha`: class parameter or auxiliary state stored as `Union{Float64,Nothing}`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct SmoothQuadraticLojasiewiczFunctionCheap <: AbstractFunction
     mu::Float64
     L::Float64

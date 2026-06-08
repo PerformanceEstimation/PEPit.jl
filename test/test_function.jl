@@ -2,11 +2,11 @@ using Test
 
 
 function reset_counters!()
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 end
 
 @testset "PEPFunction Tests" begin
@@ -36,11 +36,11 @@ end
         @test func1.counter == 0
         @test func2._PEPit_func.counter == 1
         @test composite_function.counter === nothing
-        @test Function_counter[] == 2
+        @test PEPit.Function_counter[] == 2
 
         new_function = PEPFunction(is_leaf=true, decomposition_dict=nothing)
         @test new_function.counter == 2
-        @test Function_counter[] == 3
+        @test PEPit.Function_counter[] == 3
     end
 
     function compute_linear_combination(func1, func2)
@@ -249,17 +249,17 @@ end
         new_function = compute_linear_combination(func1, func2)
 
 
-        @test _is_already_evaluated_on_point(new_function, point) === nothing
-        @test _is_already_evaluated_on_point(func1, point) === nothing
-        @test _is_already_evaluated_on_point(func2._PEPit_func, point) === nothing
+        @test PEPit._is_already_evaluated_on_point(new_function, point) === nothing
+        @test PEPit._is_already_evaluated_on_point(func1, point) === nothing
+        @test PEPit._is_already_evaluated_on_point(func2._PEPit_func, point) === nothing
 
 
         oracle!(new_function, point)
 
 
-        @test _is_already_evaluated_on_point(new_function, point) == new_function.list_of_points[1][2:3]
-        @test _is_already_evaluated_on_point(func1, point) == func1.list_of_points[1][2:3]
-        @test _is_already_evaluated_on_point(func2._PEPit_func, point) == func2._PEPit_func.list_of_points[1][2:3]
+        @test PEPit._is_already_evaluated_on_point(new_function, point) == new_function.list_of_points[1][2:3]
+        @test PEPit._is_already_evaluated_on_point(func1, point) == func1.list_of_points[1][2:3]
+        @test PEPit._is_already_evaluated_on_point(func2._PEPit_func, point) == func2._PEPit_func.list_of_points[1][2:3]
     end
 
     @testset "Separate Leaf Functions - Non-differentiable" begin
@@ -271,12 +271,12 @@ end
         point2 = Point(is_leaf=true, decomposition_dict=nothing)
         oracle!(new_function, point1)
 
-        list_nothing, list_grad_only, list_grad_val = _separate_leaf_functions_regarding_their_need_on_point(new_function, point1)
+        list_nothing, list_grad_only, list_grad_val = PEPit._separate_leaf_functions_regarding_their_need_on_point(new_function, point1)
         @test length(list_nothing) == 0
         @test length(list_grad_only) == 2
         @test length(list_grad_val) == 0
 
-        list_nothing, list_grad_only, list_grad_val = _separate_leaf_functions_regarding_their_need_on_point(new_function, point2)
+        list_nothing, list_grad_only, list_grad_val = PEPit._separate_leaf_functions_regarding_their_need_on_point(new_function, point2)
         @test length(list_nothing) == 0
         @test length(list_grad_only) == 0
         @test length(list_grad_val) == 2
@@ -291,12 +291,12 @@ end
         point2 = Point(is_leaf=true, decomposition_dict=nothing)
         oracle!(new_function, point1)
 
-        list_nothing, list_grad_only, list_grad_val = _separate_leaf_functions_regarding_their_need_on_point(new_function, point1)
+        list_nothing, list_grad_only, list_grad_val = PEPit._separate_leaf_functions_regarding_their_need_on_point(new_function, point1)
         @test length(list_nothing) == 1
         @test length(list_grad_only) == 0
         @test length(list_grad_val) == 0
 
-        list_nothing, list_grad_only, list_grad_val = _separate_leaf_functions_regarding_their_need_on_point(new_function, point2)
+        list_nothing, list_grad_only, list_grad_val = PEPit._separate_leaf_functions_regarding_their_need_on_point(new_function, point2)
         @test length(list_nothing) == 0
         @test length(list_grad_only) == 0
         @test length(list_grad_val) == 1

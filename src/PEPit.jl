@@ -13,6 +13,24 @@ import Base: +, -, *, /, ==, <=, >=, ^, hash, getindex
 abstract type AbstractPoint end
 abstract type AbstractExpression end
 abstract type AbstractConstraint end
+"""
+    AbstractFunction
+
+Abstract supertype for function and operator classes that can participate in a
+[`PEP`](@ref).
+
+Concrete subtypes represent interpolation models for classes of scalar
+functions or operators. They wrap a [`PEPFunction`](@ref), expose oracle methods
+such as [`gradient!`](@ref), [`value!`](@ref), [`stationary_point!`](@ref), or
+[`fixed_point!`](@ref), and implement `add_class_constraints!` to add the
+class-specific interpolation constraints before the SDP is solved.
+
+# Implementation
+New function or operator classes should subtype `AbstractFunction`, store an
+internal `PEPFunction`, forward oracle calls to it, and implement
+`add_class_constraints!`. The concrete class is then passed to
+[`declare_function!`](@ref).
+"""
 abstract type AbstractFunction end
 
 
@@ -118,13 +136,8 @@ export
 
     merge_dicts, multiply_dicts, prune_dict,
 
-    Point_counter, Expression_counter, Function_counter,
-    Global_Constraint_counter, NEXT_ID, PSDMatrix_counter,
-
     get_is_leaf,
-    _is_already_evaluated_on_point, _separate_leaf_functions_regarding_their_need_on_point,
-    _get_nb_eigs_and_corrected,
 
-    eval_dual
+    evaluate, eval_dual
 
 end

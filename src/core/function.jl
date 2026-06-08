@@ -1,3 +1,35 @@
+"""
+    PEPFunction(; is_leaf=true, decomposition_dict=nothing, reuse_gradient=false)
+
+Represent the internal symbolic function object shared by all concrete classes.
+
+`PEPFunction` stores the data needed to model a leaf function, a leaf operator,
+or an affine combination of leaf objects. Concrete classes such as
+[`SmoothConvexFunction`](@ref) and [`MonotoneOperator`](@ref) wrap a
+`PEPFunction` and define their interpolation constraints by inspecting its
+registered oracle evaluations.
+
+# Fields
+- `_id`: unique object identifier used for hashing and equality.
+- `_is_leaf`: whether this object is a leaf function/operator.
+- `decomposition_dict`: affine decomposition over leaf `PEPFunction` objects.
+- `reuse_gradient`: whether repeated oracle calls at the same point reuse the
+  same gradient/subgradient.
+- `list_of_points`: registered triples `(x, g, f)` representing oracle calls.
+- `list_of_stationary_points`: registered triples with zero gradient.
+- `list_of_constraints`: scalar constraints attached to this function object.
+- `list_of_psd`: user-added PSD constraints attached to this object.
+- `list_of_class_psd`: class-generated PSD constraints.
+- `counter`: leaf function index, or `nothing` for affine combinations.
+
+# Mathematical model
+For a registered triple `(x, g, f)`, the symbolic objects represent
+`g \\in \\partial f(x)` and the scalar value `f(x)` for the modeled class. During
+`solve!`, class-specific interpolation constraints relate all such triples.
+
+See also [`declare_function!`](@ref), [`oracle!`](@ref), [`gradient!`](@ref),
+[`value!`](@ref), and [`add_constraint!`](@ref).
+"""
 mutable struct PEPFunction <: AbstractFunction
     _id::Int
     _is_leaf::Bool
@@ -152,6 +184,25 @@ function add_point!(func::PEPFunction, triplet::Tuple{Point,Point,Expression})
 end
 
 
+"""
+    oracle!(func, point)
+
+Evaluate the symbolic oracle of `func` at `point`, returning a pair
+`(gradient, value)` and registering the evaluation for interpolation
+constraints.
+
+If `func.reuse_gradient` is true and the point has already been evaluated, the
+previously registered pair is returned. Otherwise, a new symbolic subgradient is
+created while reusing the previous function value when available.
+
+For affine combinations of leaf functions, the oracle either aggregates known
+leaf oracle values or creates the missing symbolic objects needed to make the
+aggregate gradient and value consistent.
+
+# Returns
+`(g, f)`, where `g` is a [`Point`](@ref) representing a gradient/subgradient and
+`f` is an [`Expression`](@ref) representing the function value.
+"""
 function oracle!(func::PEPFunction, point::Point)
     evaluation = _is_already_evaluated_on_point(func, point)
     if evaluation !== nothing && func.reuse_gradient
@@ -188,17 +239,50 @@ function oracle!(func::PEPFunction, point::Point)
 end
 
 
+"""
+    value!(func, point)
+
+Return the symbolic function value of `func` at `point`, creating an oracle
+evaluation if one has not already been registered.
+
+This is the Julia analogue of evaluating a PEPit function symbolically. It does
+not compute a numerical value before the PEP is solved; it creates or retrieves
+the scalar variable that will later be constrained by the class interpolation
+conditions.
+"""
 value!(func::PEPFunction, point::Point) = (
     _is_already_evaluated_on_point(func, point) !== nothing ?
         _is_already_evaluated_on_point(func, point)[2]
       : oracle!(func, point)[2]
 )
 
+"""
+    gradient!(func, point)
+
+Return the symbolic gradient or subgradient of `func` at `point`, creating an
+oracle evaluation if needed.
+
+For differentiable classes the returned point is interpreted as the gradient.
+For nonsmooth classes it is an arbitrary selected subgradient. The
+`reuse_gradient` flag controls whether repeated calls at the same point must
+return the same symbolic subgradient.
+"""
 gradient!(func::PEPFunction, point::Point) = oracle!(func, point)[1]
 
 subgradient!(func::PEPFunction, point::Point) = gradient!(func, point)
 
 
+"""
+    stationary_point!(func; return_gradient_and_function_value=false)
+
+Create a symbolic stationary point of `func`. When
+`return_gradient_and_function_value=true`, also return the zero gradient and
+associated function value.
+
+The registered oracle triple is `(xs, 0, fs)`, so class interpolation
+constraints can use `xs` as an optimizer or zero point when the class supports
+such an interpretation.
+"""
 function stationary_point!(func::PEPFunction; return_gradient_and_function_value=false)
 
     point, g, f =
@@ -214,6 +298,17 @@ function stationary_point!(func::PEPFunction; return_gradient_and_function_value
 end
 
 
+"""
+    fixed_point!(func)
+
+Create a symbolic fixed point for an operator-like object and return the point,
+its image, and the associated scalar value.
+
+The registered triple is `(x, x, f)`, which encodes an operator evaluation whose
+output equals its input. This is used by fixed-point and monotone-operator
+examples where the oracle value is an operator image rather than a gradient of a
+scalar objective.
+"""
 function fixed_point!(func::PEPFunction)
     x = Point()
     fx = Expression()

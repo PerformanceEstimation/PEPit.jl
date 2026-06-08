@@ -1,3 +1,24 @@
+"""
+    PSDMatrix(matrix_of_expressions)
+
+Represent a positive-semidefinite matrix constraint with symbolic entries.
+
+A `PSDMatrix` stores a square matrix whose entries are [`Expression`](@ref)
+objects or real constants. It is used for interpolation conditions and
+additional matrix inequalities that are more naturally expressed as PSD blocks
+than as scalar inequalities.
+
+# Fields
+- `matrix_of_expressions`: square matrix of symbolic scalar entries.
+- `shape`: matrix dimensions.
+- `_value`: numerical matrix value after solving.
+- `_dual_variable_value`: PSD dual matrix after solving.
+- `entries_dual_variable_value`: duals associated with entry-linking
+  equalities in the JuMP model.
+- `counter`: global PSD-constraint index.
+
+See also [`add_psd_matrix!`](@ref), [`evaluate`](@ref), and [`eval_dual`](@ref).
+"""
 mutable struct PSDMatrix
     matrix_of_expressions::Matrix{Expression}
     shape::Tuple{Int,Int}
@@ -74,6 +95,15 @@ end
 Base.getindex(psd::PSDMatrix, i::Int, j::Int) = psd.matrix_of_expressions[i, j]
 
 
+"""
+    evaluate(psd::PSDMatrix)
+
+Return the numerical matrix value of a PSD constraint after the PEP has been
+solved.
+
+Each symbolic entry is evaluated independently. Calling this before the PEP has
+been solved raises an error.
+"""
 function evaluate(psd::PSDMatrix)
     if psd._value === nothing
         try

@@ -1,3 +1,31 @@
+@doc raw"""
+    ConvexQGFunction(param; reuse_gradient=false)
+
+Represent the `ConvexQGFunction` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of quadratically upper bounded ($\text{QG}^+$ [1]),
+i.e. $\forall x, f(x) - f_\star \leqslant \frac{L}{2} \|x-x_\star\|^2$, and convex functions.
+
+# Class parameters
+- `L`: The quadratic upper bound parameter
+
+General quadratically upper bounded ($\text{QG}^+$) convex functions are characterized
+by the quadratic growth parameter `L`, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, ConvexQGFunction, param)
+```
+
+# Fields
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct ConvexQGFunction <: AbstractFunction
     L::Float64
     _PEPit_func::PEPFunction

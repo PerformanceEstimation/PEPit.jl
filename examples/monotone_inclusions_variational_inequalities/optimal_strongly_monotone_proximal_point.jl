@@ -8,6 +8,78 @@ function phi(mu, idx)
     return ((1 + 2 * mu)^(2 * idx + 2) - 1) / ((1 + 2 * mu)^2 - 1)
 end
 
+@doc raw"""
+    wc_optimal_strongly_monotone_proximal_point(n, mu; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_optimal_strongly_monotone_proximal_point`.
+
+Compute a worst-case guarantee for optimal strongly monotone proximal point.
+
+# Performance metric
+
+This code computes a worst-case guarantee for the squared final residual
+
+```math
+\|y_{n-1} - x_n\|^2,
+```
+
+under the normalization $\|x_0-x_\star\|^2 \leqslant 1$, where $x_\star$ is a zero
+of the strongly monotone operator $A$.
+
+# Algorithm
+
+The method applies a unit-stepsize proximal point oracle for a $\mu$-strongly
+monotone operator and then extrapolates the next query point. With
+
+```math
+\phi_i(\mu) =
+\begin{cases}
+0, & i=-1,\\
+\frac{(1+2\mu)^{2i+2}-1}{(1+2\mu)^2-1}, & i\geq 0,
+\end{cases}
+```
+
+the Julia implementation uses
+
+```math
+\begin{aligned}
+x_{i+1} &= (I + A)^{-1}(y_i),\\
+y_{i+1} &= x_{i+1}
+    + \frac{\phi_i(\mu)-1}{\phi_{i+1}(\mu)}(x_{i+1}-x_i)
+    - \frac{2\mu\phi_i(\mu)}{\phi_{i+1}(\mu)}(y_i-x_{i+1})\\
+&\quad
+    + \frac{(1+2\mu)\phi_{i-1}(\mu)}{\phi_{i+1}(\mu)}(y_{i-1}-x_i).
+\end{aligned}
+```
+
+# Theoretical guarantee
+
+The reference value computed by the example is
+
+```math
+\left(\frac{2\mu}{(1+2\mu)^n-1}\right)^2.
+```
+
+# References
+No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+# Arguments
+- `n`: number of iterations.
+- `mu`: strong convexity or monotonicity parameter, as used by the modeled class.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value computed by PEPit.jl.
+- `theoretical_tau`: reference theoretical value when the example provides one.
+
+# Julia usage
+```julia
+wc_optimal_strongly_monotone_proximal_point(10, 0.05; verbose=true)
+```
+"""
 function wc_optimal_strongly_monotone_proximal_point(n, mu; solver=Clarabel.Optimizer, verbose=true)
 
 

@@ -1,3 +1,31 @@
+"""
+    Expression(; is_leaf=true, decomposition_dict=nothing)
+
+Represent a symbolic scalar expression in a PEP model.
+
+An `Expression` is an affine combination of three kinds of scalar atoms:
+independent leaf function values, inner products of leaf [`Point`](@ref)
+objects, and constants. These expressions are used for function values,
+initial conditions, performance metrics, interpolation inequalities, and PSD
+matrix entries.
+
+# Fields
+- `_id`: unique object identifier used for hashing and equality.
+- `_is_leaf`: whether the expression is an independent scalar function value.
+- `decomposition_dict`: coefficients keyed by leaf expressions, point pairs, or
+  the constant key `1`.
+- `counter`: scalar-function-value index for leaf expressions, or `nothing`.
+- `_value`: numerical scalar recovered after the PEP is solved.
+
+# Mathematical model
+Products of points create expression atoms: if `x` and `g` are points, `x * g`
+represents `\\langle x, g \\rangle`. Scalar algebra on expressions builds affine
+combinations, and comparisons such as `expr <= 0` create [`Constraint`](@ref)
+objects.
+
+See also [`Point`](@ref), [`Constraint`](@ref), [`value!`](@ref), and
+[`evaluate`](@ref).
+"""
 mutable struct Expression <: AbstractExpression
     _id::Int
     _is_leaf::Bool

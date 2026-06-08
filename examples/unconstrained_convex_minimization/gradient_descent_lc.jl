@@ -15,6 +15,75 @@ function _fsolve_scalar(fun, x0; xtol=1e-10, maxiter=200)
     return x
 end
 
+@doc raw"""
+    wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, gamma, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_gradient_descent_lc`.
+
+Consider the convex minimization problem
+
+```math
+g_\star \triangleq \min_x g(Mx),
+```
+
+where $g$ is an $L_g$-smooth, `\mu_g`-strongly convex function and $M$ is a general, symmetric or
+skew-symmetric matrix with $\mu_M \leqslant \|M\| \leqslant L_M$.
+
+# Performance metric
+
+This code computes a worst-case guarantee for the objective residual
+
+```math
+g(Mx_n) - g_\star
+```
+
+under the normalization $\|x_0-x_\star\|^2 \leqslant 1$, where $x_\star$ is a
+stationary point of the linearly composed objective.
+
+# Algorithm
+
+The method is gradient descent on the composition $x \mapsto g(Mx)$. The
+symbolic step is
+
+```math
+x_{t+1} = x_t - \gamma M^\ast \nabla g(Mx_t),
+```
+
+where the Julia implementation realizes $M^\ast$ as `M.T` for a general linear
+operator, as `M` for a symmetric operator, and as `-M` for a skew-symmetric
+operator.
+
+# Theoretical guarantee
+
+The example computes its reference value from the scalar equation and closed-form
+post-processing implemented below, using the condition ratios
+$\kappa_g=\mu_g/L_g$ and $\kappa_M=\mu_M/L_M$.
+
+# References
+No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+# Arguments
+- `mug`: the strong convexity parameter of $g(y)$.
+- `Lg`: the smoothness parameter of $g(y)$.
+- `typeM`: type of matrix $M$ ("gen", "sym" or "skew").
+- `muM`: lower bound on $\|M\|$ (if typeM != "sym", then muM must be set to zero).
+- `LM`: upper bound on $\|M\|$.
+- `gamma`: step-size parameter.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, 1 / (Lg * LM^2), 3; verbose=true)
+```
+"""
 function wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, gamma, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

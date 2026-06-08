@@ -3,11 +3,11 @@ using JuMP: value
 
 @testset "PEP Tests" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
 
     L = 1.0
@@ -49,9 +49,9 @@ using JuMP: value
 
         PEPit_tau = solve!(problem; verbose=false)
         @test length(func._PEPit_func.list_of_constraints) == 2
-        @test Point_counter[] == 3
-        @test Expression_counter[] == 2
-        @test Function_counter[] == 1
+        @test PEPit.Point_counter[] == 3
+        @test PEPit.Expression_counter[] == 2
+        @test PEPit.Function_counter[] == 1
     end
 
     @testset "Eval Points and Function Values" begin
@@ -83,12 +83,12 @@ end
 
 @testset "PEP Duals and LMIs" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    PSDMatrix_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.PSDMatrix_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
 
     L = 1.0
@@ -198,11 +198,11 @@ end
 
 @testset "PEP: dimension reduction with logdet" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
     L = 1.0
     mu = 0.1
@@ -231,7 +231,7 @@ end
 
     res_base = solve!(build_problem(); verbose=false, return_full_model=true)
     res_logd = solve!(build_problem(); verbose=false, return_full_model=true, logdetiters=2)
-    nb_base, _, _ = _get_nb_eigs_and_corrected(value.(res_base.variables.G))
-    nb_logd, _, _ = _get_nb_eigs_and_corrected(value.(res_logd.variables.G))
+    nb_base, _, _ = PEPit._get_nb_eigs_and_corrected(value.(res_base.variables.G))
+    nb_logd, _, _ = PEPit._get_nb_eigs_and_corrected(value.(res_logd.variables.G))
     @test nb_logd <= nb_base
 end

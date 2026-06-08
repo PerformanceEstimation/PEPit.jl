@@ -1,3 +1,31 @@
+@doc raw"""
+    StronglyConvexFunction(param; reuse_gradient=false)
+
+Represent the `StronglyConvexFunction` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of strongly convex closed proper functions (strongly convex
+functions whose epigraphs are non-empty closed sets).
+
+# Class parameters
+- `mu`: strong convexity parameter
+
+Strongly convex functions are characterized by the strong convexity parameter $\mu$,
+hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, StronglyConvexFunction, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct StronglyConvexFunction <: AbstractFunction
     mu::Float64
     _PEPit_func::PEPFunction

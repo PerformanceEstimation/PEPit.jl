@@ -2,10 +2,10 @@ using Test
 
 @testset "Point" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
     pep = PEP()
     A = Point()
@@ -20,11 +20,11 @@ using Test
     @test A.counter == 0
     @test B.counter == 1
     @test C.counter === nothing
-    @test Point_counter[] == 2
+    @test PEPit.Point_counter[] == 2
 
     D = Point()
     @test D.counter == 2
-    @test Point_counter[] == 3
+    @test PEPit.Point_counter[] == 3
 
 
     new_point = (-A) * 1.0 + 2 * B - (B / 5)

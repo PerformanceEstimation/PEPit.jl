@@ -1,3 +1,32 @@
+@doc raw"""
+    SmoothStronglyConvexFunction(param; reuse_gradient=true)
+
+Represent the `SmoothStronglyConvexFunction` interpolation class in PEPit.jl.
+
+Implement interpolation constraints of the class of smooth strongly convex functions.
+
+# Class parameters
+- `mu`: strong convexity parameter
+- `L`: smoothness parameter
+
+Smooth strongly convex functions are characterized by parameters $\mu$ and $L$,
+hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, SmoothStronglyConvexFunction, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct SmoothStronglyConvexFunction <: AbstractFunction
     mu::Float64
     L::Float64

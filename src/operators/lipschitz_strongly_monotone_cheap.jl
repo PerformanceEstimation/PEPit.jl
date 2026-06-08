@@ -1,3 +1,43 @@
+@doc raw"""
+    LipschitzStronglyMonotoneOperatorCheap(param; reuse_gradient=true)
+
+Represent the `LipschitzStronglyMonotoneOperatorCheap` interpolation class in PEPit.jl.
+
+Implement some constraints (which are not necessary and sufficient for interpolation)
+for the class of Lipschitz continuous strongly monotone (and maximally monotone) operators.
+
+# Warning
+
+    Lipschitz strongly monotone operators do not enjoy known interpolation conditions. The conditions implemented
+    in this class are necessary but a priori not sufficient for interpolation. Hence, the numerical results
+    obtained when using this class might be non-tight upper bounds (see Discussions in [1, Section 2]).
+
+# Class parameters
+- `mu`: strong monotonicity parameter
+- `L`: Lipschitz parameter
+
+Lipschitz continuous strongly monotone operators are characterized by parameters $\mu$ and `L`,
+hence can be instantiated as
+
+# Note
+
+    Operator values can be requested through `gradient`, and `function values` should not be used.
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, LipschitzStronglyMonotoneOperatorCheap, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct LipschitzStronglyMonotoneOperatorCheap <: AbstractFunction
     mu::Float64
     L::Float64

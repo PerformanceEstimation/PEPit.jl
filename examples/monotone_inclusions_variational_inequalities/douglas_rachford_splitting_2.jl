@@ -1,5 +1,78 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_douglas_rachford_splitting_2(beta, mu, alpha, theta; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_douglas_rachford_splitting_2`.
+
+Consider the monotone inclusion problem
+
+```math
+\mathrm{Find}\, x:\, 0\in Ax + Bx,
+```
+
+where $A$ is $\beta$-cocoercive and maximally monotone
+and $B$ is (maximally) $\mu$-strongly monotone.
+We denote by $J_{\alpha A}$ and $J_{\alpha B}$ the resolvents of respectively
+$\alpha A$ and $\alpha B$.
+
+# Performance metric
+
+This code computes a worst-case guarantee for the **Douglas-Rachford splitting** (DRS).
+That is, given two initial points $w^{(0)}_t$ and $w^{(1)}_t$,
+this code computes the smallest possible $\tau(\beta, \mu, \alpha, \theta)$
+(a.k.a. "contraction factor") such that the guarantee
+
+```math
+\|w^{(0)}_{t+1} - w^{(1)}_{t+1}\|^2 \leqslant \tau(\beta, \mu, \alpha, \theta) \|w^{(0)}_{t} - w^{(1)}_{t}\|^2,
+```
+
+is valid, where $w^{(0)}_{t+1}$ and $w^{(1)}_{t+1}$ are obtained after one iteration of DRS from
+respectively $w^{(0)}_{t}$ and $w^{(1)}_{t}$.
+
+In short, for given values of $\beta$, $\mu$, $\alpha$ and $\theta$, the contraction
+factor $\tau(\beta, \mu, \alpha, \theta)$ is computed as the worst-case value of
+$\|w^{(0)}_{t+1} - w^{(1)}_{t+1}\|^2$ when $\|w^{(0)}_{t} - w^{(1)}_{t}\|^2 \leqslant 1$.
+
+# Algorithm
+One iteration of the Douglas-Rachford splitting is described as follows,
+for $t \in \{ 0, \dots, n-1\}$,
+
+```math
+    \begin{aligned}
+        x_{t+1} & = & J_{\alpha B} (w_t),\\
+        y_{t+1} & = & J_{\alpha A} (2x_{t+1}-w_t),\\
+        w_{t+1} & = & w_t - \theta (x_{t+1}-y_{t+1}).
+    \end{aligned}
+```
+# Theoretical guarantee
+Theoretical worst-case guarantees can be found in [1, section 4, Theorem 4.1].
+
+# References
+The detailed PEP methodology for studying operator splitting is provided in [1].
+
+[[1] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020). Operator splitting performance estimation:
+Tight contraction factors and optimal parameter selection. SIAM Journal on Optimization, 30(3), 2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+# Arguments
+- `beta`: operator or algorithm parameter used in the model.
+- `mu`: strong convexity or monotonicity parameter, as used by the modeled class.
+- `alpha`: algorithm parameter used in the update rule.
+- `theta`: relaxation or averaging parameter used in the update rule.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value.
+- `theoretical_tau`: theoretical value.
+
+# Julia usage
+```julia
+wc_douglas_rachford_splitting_2(1.2, 0.1, 0.3, 1.5; verbose=true)
+```
+"""
 function wc_douglas_rachford_splitting_2(beta, mu, alpha, theta; solver=Clarabel.Optimizer, verbose=true)
 
 

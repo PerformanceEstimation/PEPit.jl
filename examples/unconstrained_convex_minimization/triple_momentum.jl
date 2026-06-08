@@ -1,5 +1,96 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_triple_momentum(mu, L, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_triple_momentum`.
+
+Consider the minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and $\mu$-strongly convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for **triple momentum method** (TMM).
+That is, it computes the smallest possible $\tau(n, L, \mu)$ such that the guarantee
+
+```math
+f(x_n) - f_\star \leqslant \tau(n, L, \mu) \|x_0 - x_\star\|^2
+```
+
+is valid, where $x_n$ is the output of the TMM, and where $x_\star$ is the minimizer of $f$.
+In short, for given values of $n$, $L$ and $\mu$, $\tau(n, L, \mu)$ is computed
+as the worst-case value of $f(x_n)-f_\star$ when $\|x_0 - x_\star\|^2 \leqslant 1$.
+
+
+# Algorithm
+
+
+For $t \in \{ 1, \dots, n\}$
+
+```math
+    \begin{aligned}
+       \xi_{t+1} &&= (1 + \beta)  \xi_{t} - \beta  \xi_{t-1} - \alpha \nabla f(y_t) \\
+       y_{t} &&= (1+\gamma ) \xi_{t} -\gamma \xi_{t-1} \\
+       x_{t} && = (1 + \delta)  \xi_{t} - \delta \xi_{t-1}
+    \end{aligned}
+```
+with
+
+```math
+    \begin{aligned}
+        \kappa &&= \frac{L}{\mu} , \quad \rho = 1- \frac{1}{\sqrt{\kappa}}\\
+        (\alpha, \beta, \gamma,\delta) && = \left(\frac{1+\rho}{L}, \frac{\rho^2}{2-\rho},
+        \frac{\rho^2}{(1+\rho)(2-\rho)}, \frac{\rho^2}{1-\rho^2}\right)
+    \end{aligned}
+```
+and
+
+```math
+    \begin{aligned}
+        \xi_{0} = x_0 \\
+        \xi_{1} = x_0 \\
+        y = x_0
+    \end{aligned}
+```
+# Theoretical guarantee
+
+A theoretical **upper** (empirically tight) bound can be found in [1, Theorem 1, eq. 4]:
+
+```math
+f(x_n)-f_\star \leqslant \frac{\rho^{2(n+1)} L \kappa}{2}\|x_0 - x_\star\|^2.
+```
+
+# References
+
+The triple momentum method was discovered and analyzed in [1].
+
+[[1] Van Scoy, B., Freeman, R. A., Lynch, K. M. (2018).
+The fastest known globally convergent first-order method for minimizing strongly convex functions.
+IEEE Control Systems Letters, 2(1), 49-54.](http://www.optimization-online.org/DB_FILE/2017/03/5908.pdf)
+
+# Arguments
+- `mu`: strong convexity or monotonicity parameter, as used by the modeled class.
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_triple_momentum(0.1, 1.0, 4; solver=Clarabel.Optimizer, verbose=true)
+```
+"""
 function wc_triple_momentum(mu, L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

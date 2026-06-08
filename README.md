@@ -1,5 +1,9 @@
 # PEPit.jl
 
+[![Documentation](https://img.shields.io/badge/Documentation-stable-purple.svg)](https://PerformanceEstimation.github.io/PEPit.jl/stable/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/badge/Release-v0.1.2-blue.svg)](https://github.com/PerformanceEstimation/PEPit.jl/releases/tag/v0.1.2)
+
 `PEPit.jl` is a native Julia implementation of the Performance Estimation Programming (PEP) methodology [1,2,3] and the Python package `PEPit` [4] for worst-case analysis of first-order optimization algorithms. The core idea in PEP is to model the design and analysis of first-order optimization algorithms as higher-level optimization problems called performance estimation problems (PEPs), which are semidefinite programs (SDPs). We then solve these SDPs numerically to obtain tight worst-case bounds for known algorithms and also to discover new algorithms under suitable conditions.
 
 The intent of this Julia package is to be functionally equivalent to existing packages such as `PESTO` [5] and `PEPit` while providing a clean, Julia-native API along with a broader support of commercial and open-source solvers under the `JuMP` ecosystem [6].
@@ -139,7 +143,7 @@ After `solve_dual!`, `eval_dual(::Constraint)` and `eval_dual(::PSDMatrix)` are 
 Examples are standard Julia scripts. For instance, you can run them as:
 
 ```julia
-include("examples/unconstrained_convex_optimization/gradient_exact_line_search.jl")
+include("examples/unconstrained_convex_minimization/gradient_exact_line_search.jl")
 ```
 
 ## Notes and scope

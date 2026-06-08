@@ -1,0 +1,62 @@
+:root {
+    --pepit-blue: #24568f;
+    --pepit-ink: #172033;
+    --pepit-muted: #5f6b7a;
+    --pepit-border: #d8dee8;
+    --pepit-surface: #f7f9fc;
+}
+
+body {
+    color: var(--pepit-ink);
+}
+
+.docs-sidebar {
+    border-right: 1px solid var(--pepit-border);
+}
+
+.docs-sidebar .docs-logo {
+    color: var(--pepit-blue);
+}
+
+.content h1,
+.content h2,
+.content h3 {
+    color: var(--pepit-ink);
+    letter-spacing: 0;
+}
+
+.content h1 {
+    border-bottom: 2px solid var(--pepit-border);
+    padding-bottom: 0.25rem;
+}
+
+.content a {
+    color: var(--pepit-blue);
+}
+
+.content blockquote,
+.admonition {
+    border-radius: 6px;
+}
+
+.content table {
+    font-size: 0.94rem;
+}
+
+.content table th {
+    background: var(--pepit-surface);
+    color: var(--pepit-ink);
+}
+
+.content code {
+    border-radius: 4px;
+}
+
+.content .api-index {
+    columns: 2 18rem;
+}
+
+.content .api-index li {
+    break-inside: avoid;
+    margin-bottom: 0.2rem;
+}

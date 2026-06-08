@@ -1,5 +1,90 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_gradient_descent_quadratic_lojasiewicz_intermediate(L, mu, gamma, n, alpha; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_gradient_descent_quadratic_lojasiewicz_intermediate`.
+
+Consider the minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and satisfies a quadratic Lojasiewicz inequality:
+
+```math
+f(x)-f_\star \leqslant \frac{1}{2\mu}\|\nabla f(x) \|^2,
+```
+
+details can be found in [1,2,3]. The example here relies on the `SmoothQuadraticLojasiewiczFunctionCheap`
+description of smooth Lojasiewicz functions (based on [5, Proposition 3.2]).
+
+# Performance metric
+
+This code computes a worst-case guarantee for **gradient descent** with fixed step-size $\gamma$.
+That is, it computes the smallest possible $\tau(n, L, \gamma)$ such that the guarantee
+
+```math
+f(x_n)-f_\star \leqslant \tau(n, L, \mu, \gamma) (f(x_0) - f(x_\star))
+```
+
+is valid, where $x_n$ is the n-th iterates obtained with the gradient method with fixed step-size.
+
+# Algorithm
+
+Gradient descent is described as follows, for $t \in \{ 0, \dots, n-1\}$,
+
+```math
+x_{t+1} = x_t - \gamma \nabla f(x_t),
+```
+
+where $\gamma$ is a step-size and.
+
+# Theoretical guarantee
+We compare with the guarantees from [4, Theorem 3].
+
+# References
+
+    [[1] S. Lojasiewicz (1963).
+    Une propriete topologique des sous-ensembles analytiques reels.
+    Les equations aux derivees partielles, 117 (1963), 87-89.](https://aif.centre-mersenne.org/item/10.5802/aif.1384.pdf)
+
+    [[2] B. Polyak (1963).
+    Gradient methods for the minimisation of functionals
+    USSR Computational Mathematics and Mathematical Physics 3(4), 864-878.](https://www.sciencedirect.com/science/article/abs/pii/0041555363903823)
+
+    [[3] J. Bolte, A. Daniilidis, and A. Lewis (2007).
+    The ojasiewicz inequality for nonsmooth subanalytic functions with applications to subgradient dynamical systems.
+    SIAM Journal on Optimization 17, 1205-1223.](https://bolte.perso.math.cnrs.fr/Loja.pdf)
+
+    [[4] H. Abbaszadehpeivasti, E. de Klerk, M. Zamani (2023).
+    Conditions for linear convergence of the gradient method for non-convex optimization.
+    Optimization Letters.](https://arxiv.org/pdf/2204.00647)
+
+    [[5] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+    A constructive approach to strengthen algebraic descriptions of function and operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `mu`: strong convexity or monotonicity parameter, as used by the modeled class.
+- `gamma`: step-size parameter.
+- `n`: number of iterations.
+- `alpha`: algorithm parameter used in the update rule.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value.
+- `theoretical_tau`: theoretical value.
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_gradient_descent_quadratic_lojasiewicz_intermediate(L, mu, gamma, n, alpha; solver=Clarabel.Optimizer, verbose=true)
+```
+"""
 function wc_gradient_descent_quadratic_lojasiewicz_intermediate(L, mu, gamma, n, alpha; solver=Clarabel.Optimizer, verbose=true)
     problem = PEP()
 

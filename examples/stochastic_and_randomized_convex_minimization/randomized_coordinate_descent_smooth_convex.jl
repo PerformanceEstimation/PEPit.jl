@@ -1,5 +1,83 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_randomized_coordinate_descent_smooth_convex(L, gamma, d, t; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_randomized_coordinate_descent_smooth_convex`.
+
+Consider the convex minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for **randomized block-coordinate descent** with $d$ blocks and
+fixed step-size $\gamma$.
+That is, it verifies that the Lyapunov function
+
+```math
+\phi(t, x_t) = (t \gamma \frac{L}{d} + 1)(f(x_t) - f_\star) + \frac{L}{2} \|x_t - x_\star\||^2
+```
+
+is decreasing in expectation over the **randomized block-coordinate descent** algorithm. We use the notation
+$\mathbb{E}$ for denoting the expectation over the uniform distribution
+of the index $i \sim \mathcal{U}\left([|1, n|]\right)$.
+
+In short, for given values of $L$, $d$, and $\gamma$, it computes the worst-case value
+of $\mathbb{E}[\phi(t, x_t)]$ such that $\phi(x_{t-1}) \leqslant 1$.
+
+# Algorithm
+
+Randomized block-coordinate descent is described by
+
+```math
+\begin{aligned}
+    \text{Pick random }i & \sim & \mathcal{U}\left([|1, d|]\right), \\
+    x_{t+1} & = & x_t - \gamma \nabla_i f(x_t),
+\end{aligned}
+```
+where $\gamma$ is a step-size and $\nabla_i f(x_t)$ is the $i^{\text{th}}$ partial gradient.
+
+# Theoretical guarantee
+
+When $\gamma \leqslant \frac{1}{L}$,
+the **tight** theoretical guarantee can be found in [1, Appendix I, Theorem 16]:
+
+```math
+\mathbb{E}[\phi(t, x_t)] \leqslant \phi(t-1, x_{t-1}),
+```
+
+where $\phi(t, x_t) = (t \gamma \frac{L}{d} + 1)(f(x_t) - f_\star) + \frac{L}{2} \|x_t - x_\star\|^2$.
+
+# References
+
+
+[[1] A. Taylor, F. Bach (2019). Stochastic first-order methods: non-asymptotic and computer-aided
+analyses via potential functions. In Conference on Learning Theory (COLT).](https://arxiv.org/pdf/1902.00947.pdf)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `gamma`: step-size parameter.
+- `d`: the dimension.
+- `t`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_randomized_coordinate_descent_smooth_convex(L, 1 / L, 2, 4; solver=Clarabel.Optimizer, verbose=true)
+```
+"""
 function wc_randomized_coordinate_descent_smooth_convex(L, gamma, d, t; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

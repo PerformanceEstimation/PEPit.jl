@@ -1,3 +1,33 @@
+@doc raw"""
+    NegativelyComonotoneOperator(param; reuse_gradient=true)
+
+Represent the `NegativelyComonotoneOperator` interpolation class in PEPit.jl.
+
+Implement some necessary constraints of the class of negatively comonotone operators.
+
+# Note
+
+    Operator values can be requested through `gradient`, and `function values` should not be used.
+
+# Class parameters
+- `rho`: comonotonicity parameter (>0)
+
+Negatively comonotone operators are characterized by the parameter $\rho$, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, NegativelyComonotoneOperator, param)
+```
+
+# Fields
+- `rho`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct NegativelyComonotoneOperator <: AbstractFunction
     rho::Float64
     _PEPit_func::PEPFunction
