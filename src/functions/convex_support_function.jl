@@ -1,3 +1,29 @@
+@doc raw"""
+    ConvexSupportFunction(param; reuse_gradient=false)
+
+Represent the `ConvexSupportFunction` interpolation class in PEPit.jl.
+
+Implement interpolation constraints for the class of closed convex support functions.
+
+# Class parameters
+- `M`: upper bound on the Lipschitz constant
+
+Convex support functions are characterized by a parameter `M`, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, ConvexSupportFunction, param)
+```
+
+# Fields
+- `M`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct ConvexSupportFunction <: AbstractFunction
     M::Float64
     _PEPit_func::PEPFunction

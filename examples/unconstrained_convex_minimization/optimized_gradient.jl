@@ -1,5 +1,94 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_optimized_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_optimized_gradient`.
+
+Consider the minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for **optimized gradient method** (OGM). That is, it computes
+the smallest possible $\tau(n, L)$ such that the guarantee
+
+```math
+f(x_n) - f_\star \leqslant \tau(n, L) \|x_0 - x_\star\|^2
+```
+
+is valid, where $x_n$ is the output of OGM and where $x_\star$ is a minimizer of $f$.
+
+In short, for given values of $n$ and $L$, $\tau(n, L)$ is computed as the worst-case value
+of $f(x_n)-f_\star$ when $\|x_0 - x_\star\|^2 \leqslant 1$.
+
+# Algorithm
+
+The optimized gradient method is described by
+
+```math
+    \begin{aligned}
+        x_{t+1} & = & y_t - \frac{1}{L} \nabla f(y_t)\\
+        y_{t+1} & = & x_{t+1} + \frac{\theta_{t}-1}{\theta_{t+1}}(x_{t+1}-x_t)+\frac{\theta_{t}}{\theta_{t+1}}(x_{t+1}-y_t),
+    \end{aligned}
+```
+with
+
+```math
+    \begin{aligned}
+        \theta_0 & = & 1 \\
+        \theta_t & = & \frac{1 + \sqrt{4 \theta_{t-1}^2 + 1}}{2}, \forall t \in [|1, n-1|] \\
+        \theta_n & = & \frac{1 + \sqrt{8 \theta_{n-1}^2 + 1}}{2}.
+    \end{aligned}
+```
+# Theoretical guarantee
+
+The **tight** theoretical guarantee can be found in [2, Theorem 2]:
+
+```math
+f(x_n)-f_\star \leqslant \frac{L\|x_0-x_\star\|^2}{2\theta_n^2},
+```
+
+where tightness follows from [3, Theorem 3].
+
+# References
+
+The optimized gradient method was developed in [1, 2]; the corresponding lower bound was first obtained in [3].
+
+[[1] Y. Drori, M. Teboulle (2014).
+Performance of first-order methods for smooth convex minimization: a novel approach.
+Mathematical Programming 145(1-2), 451-482.](https://arxiv.org/pdf/1206.3209.pdf)
+
+[[2] D. Kim, J. Fessler (2016).
+Optimized first-order methods for smooth convex minimization.
+Mathematical Programming 159.1-2: 81-107.](https://arxiv.org/pdf/1406.5468.pdf)
+
+[[3] Y. Drori  (2017).
+The exact information-based complexity of smooth convex minimization.
+Journal of Complexity, 39, 1-16.](https://arxiv.org/pdf/1606.01424.pdf)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_optimized_gradient(3.0, 4; verbose=true)
+```
+"""
 function wc_optimized_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

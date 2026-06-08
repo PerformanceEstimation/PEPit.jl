@@ -2,10 +2,10 @@ using Test
 
 @testset "Expression" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
 
     pep = PEP()
@@ -23,11 +23,11 @@ using Test
     @test composite_expression.counter === nothing
     @test inner_product.counter === nothing
     @test function_value.counter == 0
-    @test Expression_counter[] == 1
+    @test PEPit.Expression_counter[] == 1
 
     new_expression = Expression()
     @test new_expression.counter == 1
-    @test Expression_counter[] == 2
+    @test PEPit.Expression_counter[] == 2
 
 
     new_expression2 = 1 + 2 * (4 - (-(inner_product) * 3) - 5 + 2 * function_value - function_value / 5 + 2)

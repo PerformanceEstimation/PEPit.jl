@@ -1,5 +1,68 @@
 using PEPit, OrderedCollections, Clarabel
 
+@doc raw"""
+    wc_cyclic_coordinate_descent(L, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_cyclic_coordinate_descent`.
+
+Consider the convex minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth by blocks (with $d$ blocks) and convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for **cyclic coordinate descent** with fixed step-sizes $1/L_i$.
+That is, it computes the smallest possible $\tau(n, d, L)$ such that the guarantee
+
+```math
+f(x_n) - f_\star \leqslant \tau(n, d, L) \|x_0 - x_\star\|^2
+```
+
+is valid, where $x_n$ is the output of cyclic coordinate descent with fixed step-sizes $1/L_i$, and
+where $x_\star$ is a minimizer of $f$.
+
+In short, for given values of $n$, $L$, and $d$, $\tau(n, d, L)$ is computed as
+the worst-case value of $f(x_n)-f_\star$ when $\|x_0 - x_\star\|^2 \leqslant 1$.
+
+# Algorithm
+
+Cyclic coordinate descent is described by
+
+```math
+x_{t+1} = x_t - \frac{1}{L_{i_t}} \nabla_{i_t} f(x_t),
+```
+
+where $L_{i_t}$ is the Lipschitz constant of the block $i_t$,
+and where $i_t$ follows a prescribed ordering.
+
+# References
+
+
+[[1] Z. Shi, R. Liu (2016).
+Better worst-case complexity analysis of the block coordinate descent method for large scale machine learning.
+In 2017 16th IEEE International Conference on Machine Learning and Applications (ICMLA).](https://arxiv.org/pdf/1608.04826.pdf)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: None
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_cyclic_coordinate_descent(L, 9; solver=Clarabel.Optimizer, verbose=true)
+```
+"""
 function wc_cyclic_coordinate_descent(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

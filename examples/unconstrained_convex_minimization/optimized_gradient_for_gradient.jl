@@ -1,5 +1,86 @@
 using PEPit, OrderedCollections, Clarabel, OffsetArrays
 
+@doc raw"""
+    wc_optimized_gradient_for_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_optimized_gradient_for_gradient`.
+
+Consider the minimization problem
+
+```math
+f_\star \triangleq \min_x f(x),
+```
+
+where $f$ is $L$-smooth and convex.
+
+# Performance metric
+
+This code computes a worst-case guarantee for **optimized gradient method for gradient** (OGM-G).
+That is, it computes the smallest possible $\tau(n, L)$ such that the guarantee
+
+```math
+\|\nabla f(x_n)\|^2 \leqslant \tau(n, L) (f(x_0) - f_\star)
+```
+
+is valid, where $x_n$ is the output of OGM-G and where $x_\star$ is a minimizer of $f$.
+
+In short, for given values of $n$ and $L$, $\tau(n, L)$ is computed as the worst-case value
+of $\|\nabla f(x_n)\|^2$ when $f(x_0)-f_\star \leqslant 1$.
+
+# Algorithm
+
+For $t\in\{0,1,\ldots,n-1\}$, the optimized gradient method for gradient [1, Section 6.3] is described by
+
+```math
+    \begin{aligned}
+        y_{t+1} & = & x_t - \frac{1}{L} \nabla f(x_t),\\
+        x_{t+1} & = & y_{t+1} + \frac{(\tilde{\theta}_t-1)(2\tilde{\theta}_{t+1}-1)}{\tilde{\theta}_t(2\tilde{\theta}_t-1)}(y_{t+1}-y_t)+\frac{2\tilde{\theta}_{t+1}-1}{2\tilde{\theta}_t-1}(y_{t+1}-x_t),
+    \end{aligned}
+```
+with
+
+```math
+    \begin{aligned}
+        \tilde{\theta}_n & = & 1 \\
+        \tilde{\theta}_t & = & \frac{1 + \sqrt{4 \tilde{\theta}_{t+1}^2 + 1}}{2}, \forall t \in [|1, n-1|] \\
+        \tilde{\theta}_0 & = & \frac{1 + \sqrt{8 \tilde{\theta}_{1}^2 + 1}}{2}.
+    \end{aligned}
+```
+# Theoretical guarantee
+
+The **tight** worst-case guarantee can be found in [1, Theorem 6.1]:
+
+```math
+\|\nabla f(x_n)\|^2 \leqslant \frac{2L(f(x_0)-f_\star)}{\tilde{\theta}_0^2},
+```
+
+where tightness is achieved on Huber losses, see [1, Section 6.4].
+
+# References
+
+The optimized gradient method for gradient was developed in [1].
+
+[[1] D. Kim, J. Fessler (2021).
+Optimizing the efficiency of first-order methods for decreasing the gradient of smooth convex functions.
+Journal of optimization theory and applications, 188(1), 192-219.](https://arxiv.org/pdf/1803.06600.pdf)
+
+# Arguments
+- `L`: smoothness or Lipschitz parameter, as used by the modeled class.
+- `n`: number of iterations.
+- `solver`: JuMP optimizer constructor used to solve the generated SDP.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_optimized_gradient_for_gradient(3.0, 4; solver=Clarabel.Optimizer, verbose=true)
+```
+"""
 function wc_optimized_gradient_for_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)
 
     problem = PEP()

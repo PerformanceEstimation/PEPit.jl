@@ -1,3 +1,32 @@
+@doc raw"""
+    RsiEbFunction(param; reuse_gradient=false)
+
+Represent the `RsiEbFunction` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of functions verifying
+the "lower" restricted secant inequality ($\text{RSI}^-$) and the "upper" error bound ($\text{EB}^+$).
+
+# Class parameters
+- `mu`: Restricted sequent inequality parameter
+- `L`: Error bound parameter
+$\text{RSI}^-$ and $\text{EB}^+$ functions are characterized by parameters $\mu$ and `L`,
+hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, RsiEbFunction, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct RsiEbFunction <: AbstractFunction
     mu::Float64
     L::Float64

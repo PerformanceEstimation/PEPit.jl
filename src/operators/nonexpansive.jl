@@ -1,5 +1,35 @@
 using OrderedCollections
 
+@doc raw"""
+    NonexpansiveOperator(param; <keyword arguments>)
+
+Represent the `NonexpansiveOperator` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of (possibly inconsistent) nonexpansive operators.
+
+# Note
+
+    Operator values can be requested through `gradient`, and `function values` should not be used.
+
+# Class parameters
+- `v`: infimal displacement vector.
+
+Nonexpansive operators are not characterized by any parameter, hence can be initiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, NonexpansiveOperator, param)
+```
+
+# Fields
+- `v`: class parameter or auxiliary state stored as `Union{Point,Nothing}`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct NonexpansiveOperator <: AbstractFunction
     v::Union{Point,Nothing}
     _PEPit_func::PEPFunction

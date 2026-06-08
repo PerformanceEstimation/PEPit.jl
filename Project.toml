@@ -1,6 +1,6 @@
 name = "PEPit"
 uuid = "362dabbc-d565-4ef8-96fa-aefabe1c072a"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Shuvomoy Das Gupta <shuvomoy.dasgupta@gmail.com> and contributors"]
 
 [deps]
@@ -33,3 +33,6 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
+
+[workspace]
+projects = ["docs"]

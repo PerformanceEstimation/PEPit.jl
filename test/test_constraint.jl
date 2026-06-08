@@ -2,11 +2,11 @@ using Test
 
 @testset "Constraints" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
 
     L = 1.0
@@ -113,11 +113,11 @@ end
 
 @testset "Constraints: logdet heuristic" begin
 
-    Point_counter[] = 0
-    Expression_counter[] = 0
-    Function_counter[] = 0
-    Global_Constraint_counter[] = 0
-    NEXT_ID[] = 0
+    PEPit.Point_counter[] = 0
+    PEPit.Expression_counter[] = 0
+    PEPit.Function_counter[] = 0
+    PEPit.Global_Constraint_counter[] = 0
+    PEPit.NEXT_ID[] = 0
 
     L = 1.0
     mu = 0.1

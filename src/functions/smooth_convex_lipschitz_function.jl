@@ -1,3 +1,32 @@
+@doc raw"""
+    SmoothConvexLipschitzFunction(param; reuse_gradient=true)
+
+Represent the `SmoothConvexLipschitzFunction` interpolation class in PEPit.jl.
+
+Implement interpolation constraints of the class of smooth convex Lipschitz continuous functions.
+
+# Class parameters
+- `L`: smoothness parameter
+- `M`: Lipschitz continuity parameter
+
+Smooth convex Lipschitz continuous functions are characterized by the smoothness parameters `L`
+and Lipschitz continuity parameter `M`, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, SmoothConvexLipschitzFunction, param)
+```
+
+# Fields
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `M`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct SmoothConvexLipschitzFunction <: AbstractFunction
     L::Float64
     M::Float64

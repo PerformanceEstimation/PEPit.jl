@@ -1,6 +1,80 @@
 using PEPit
 using OrderedCollections
 
+@doc raw"""
+    wc_inconsistent_halpern_iteration(n; verbose=true)
+
+# Problem statement
+
+Compute a PEPit worst-case guarantee for `wc_inconsistent_halpern_iteration`.
+
+Consider the fixed point problem
+
+```math
+\mathrm{Find}\, x:\, x = Ax,
+```
+
+where $A$ is a non-expansive operator,
+that is a $L$-Lipschitz operator with $L=1$.
+When the solution of above problem, or fixed point, does not exist,
+behavior of the fixed-point iteration with A can be characterized with
+infimal displacement vector $v$.
+
+# Performance metric
+
+This code computes a worst-case guarantee for the **Halpern Iteration**,
+when `A` is not necessarily consistent, i.e., does not necessarily have fixed point.
+That is, it computes the smallest possible $\tau(n)$ such that the guarantee
+
+```math
+\|x_n - Ax_n - v\|^2 \leqslant \tau(n) \|x_0 - x_\star\|^2
+```
+
+is valid, where $x_n$ is the output of the **Halpern iteration**
+and $x_\star$ is the point where $v$ is attained, i.e.,
+
+```math
+v = x_\star - Ax_\star
+```
+
+In short, for a given value of $n$,
+$\tau(n)$ is computed as the worst-case value of
+$\|x_n - Ax_n - v\|^2$ when $\|x_0 - x_\star\|^2 \leqslant 1$.
+
+# Algorithm
+The Halpern iteration can be written as
+
+```math
+x_{t+1} = \frac{1}{t + 2} x_0 + \left(1 - \frac{1}{t + 2}\right) Ax_t.
+```
+
+# Theoretical guarantee
+A worst-case guarantee for Halpern iteration can be found in [1, Theorem 8]:
+
+```math
+\|x_n - Ax_n - v\|^2 \leqslant \left(\frac{\sqrt{Hn + 12} + 1}{n + 1}\right)^2 \|x_0 - x_\star\|^2.
+```
+
+# References
+The detailed approach is available in [1].
+
+[[1] J. Park, E. Ryu (2023).
+Accelerated Infeasibility Detection of Constrained Optimization and Fixed-Point Iterations.
+International Conference on Machine Learning.](https://arxiv.org/pdf/2303.15876.pdf)
+
+# Arguments
+- `n`: number of iterations.
+- `verbose`: print example and solver progress information when true.
+
+# Returns
+- `pepit_tau`: worst-case value
+- `theoretical_tau`: theoretical value
+
+# Julia usage
+```julia
+pepit_tau, theoretical_tau = wc_inconsistent_halpern_iteration(25; verbose=true)
+```
+"""
 function wc_inconsistent_halpern_iteration(n; verbose=true)
     problem = PEP()
 

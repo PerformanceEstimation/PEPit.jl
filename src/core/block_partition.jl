@@ -1,3 +1,23 @@
+"""
+    BlockPartition(d)
+
+Represent a symbolic partition of points into `d` mutually orthogonal blocks.
+
+Block partitions support block-coordinate interpolation constraints. Calling
+[`get_block`](@ref) on a point creates symbolic block components
+`x^{(1)}, ..., x^{(d)}` whose sum is the original point. The corresponding
+orthogonality constraints are generated later when the PEP is compiled.
+
+# Fields
+- `d`: number of blocks.
+- `list_of_constraints`: orthogonality constraints generated for this
+  partition.
+- `blocks_dict`: map from original points to their symbolic block components.
+- `counter`: global partition index.
+
+See also [`declare_block_partition!`](@ref), [`get_block`](@ref), and
+[`get_nb_blocks`](@ref).
+"""
 mutable struct BlockPartition
     d::Int
     list_of_constraints::Vector{Constraint}
@@ -14,9 +34,25 @@ mutable struct BlockPartition
 end
 
 
+"""
+    get_nb_blocks(bp::BlockPartition)
+
+Return the number of blocks in a block partition.
+"""
 get_nb_blocks(bp::BlockPartition) = bp.d
 
 
+"""
+    get_block(bp::BlockPartition, point::Point, block_number::Int)
+
+Return the `block_number`-th symbolic block of `point`, creating the block
+decomposition and its orthogonality constraints if needed.
+
+The first `d - 1` blocks are new leaf points; the final block is defined as the
+residual required to make the block sum equal to `point`. Orthogonality
+constraints are registered by `add_partition_constraints!` during model
+construction.
+"""
 function get_block(bp::BlockPartition, point::Point, block_number::Int)
     @assert 1 <= block_number <= bp.d "block_number must be an integer in 1..$(bp.d)."
     if !haskey(bp.blocks_dict, point)

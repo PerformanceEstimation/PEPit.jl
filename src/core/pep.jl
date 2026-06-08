@@ -1,3 +1,28 @@
+"""
+    PEP()
+
+Create an empty performance estimation problem and reset the global symbolic
+registries used to index points, expressions, functions, constraints, and PSD
+blocks.
+
+A `PEP` stores the symbolic description of a worst-case analysis: function or
+operator classes, initial points, initial conditions, performance metrics, and
+optional PSD constraints. Calling [`solve!`](@ref) converts this symbolic
+description into a semidefinite program in JuMP.
+
+# Fields
+- `list_of_functions`: function/operator classes declared in the problem.
+- `list_of_points`: initial leaf points registered by [`set_initial_point!`](@ref).
+- `list_of_conditions`: scalar initial or normalization constraints.
+- `list_of_performance_metrics`: expressions whose minimum is maximized.
+- `list_of_psd`: global PSD constraints.
+- `residual`: dual residual matrix associated with the Gram PSD constraint.
+
+# Mathematical model
+PEPit computes the smallest valid worst-case constant by maximizing a
+performance expression over all symbolic iterates and oracle values satisfying
+the selected interpolation constraints and initial conditions.
+"""
 mutable struct PEP
     list_of_functions::Vector{AbstractFunction}
     list_of_points::Vector{Point}
@@ -24,6 +49,26 @@ mutable struct PEP
 end
 
 
+"""
+    declare_function!(pep, func_class, param; reuse_gradient=nothing)
+
+Declare a leaf function or operator class in `pep` and return the created
+object. `param` is typically an `OrderedDict` containing class parameters such
+as `"L"`, `"mu"`, or `"beta"`.
+
+# Arguments
+- `pep::PEP`: problem to which the class is added.
+- `func_class`: concrete subtype of [`AbstractFunction`](@ref).
+- `param`: parameter dictionary consumed by `func_class`.
+- `reuse_gradient`: optional override for repeated oracle evaluations at the
+  same point.
+
+# Examples
+```julia
+problem = PEP()
+f = declare_function!(problem, SmoothConvexFunction, OrderedDict("L" => 1.0))
+```
+"""
 function declare_function!(pep::PEP, func_class, param; reuse_gradient=nothing)
     f = reuse_gradient === nothing ?
         func_class(param; is_leaf=true) :
@@ -32,6 +77,15 @@ function declare_function!(pep::PEP, func_class, param; reuse_gradient=nothing)
     return f
 end
 
+"""
+    declare_block_partition!(pep, d)
+
+Create a [`BlockPartition`](@ref) with `d` blocks and register it for inclusion
+in the PEP model.
+
+The returned partition is global to the current `PEP` construction context.
+Block orthogonality constraints are materialized during model construction.
+"""
 function declare_block_partition!(pep::PEP, d::Int)
 
 
@@ -39,15 +93,61 @@ function declare_block_partition!(pep::PEP, d::Int)
 end
 
 
+"""
+    add_constraint!(target, constraint)
+
+Add a scalar [`Constraint`](@ref) to a PEP, function class, operator class, or
+block partition, depending on `target`.
+
+For a `PEP`, the constraint is treated as a global initial/general condition.
+For a function-like object, it is treated as an additional class-specific
+constraint and is included with that object's interpolation constraints.
+"""
 add_constraint!(pep::PEP, constraint::Constraint) = push!(pep.list_of_conditions, constraint)
 
+"""
+    set_initial_point!(pep)
+
+Create and register a new leaf [`Point`](@ref) as an initial point of `pep`.
+
+Initial points are independent vectors in the Gram matrix. They are typically
+used in initial conditions such as `(x0 - xs)^2 <= R^2`.
+"""
 set_initial_point!(pep::PEP) = (x = Point(); push!(pep.list_of_points, x); x)
 
+"""
+    set_initial_condition!(pep, condition)
+
+Add an initial condition or normalization constraint to `pep`.
+
+Initial conditions define the admissible set of problem instances, for example
+`\\|x_0 - x_\\star\\|^2 \\leq 1` or a bound on an initial function gap.
+"""
 set_initial_condition!(pep::PEP, condition::Constraint) = add_constraint!(pep, condition)
 
+"""
+    set_performance_metric!(pep, expression)
+
+Register a scalar performance metric. `solve!` maximizes the minimum over all
+registered metrics.
+
+The expression is usually the quantity whose worst-case value is sought, such
+as `f(x_n) - f_\\star`, `\\|x_n - x_\\star\\|^2`, or a residual norm. Multiple
+metrics model the pointwise minimum of several quantities.
+"""
 set_performance_metric!(pep::PEP, expression::Expression) = push!(pep.list_of_performance_metrics, expression)
 
 
+"""
+    add_psd_matrix!(target, matrix_of_expressions)
+
+Add a positive-semidefinite matrix constraint to a PEP or function-like object.
+Entries may be [`Expression`](@ref) objects or real constants.
+
+Global PSD constraints are attached to the problem. Function-local PSD
+constraints are attached to the internal [`PEPFunction`](@ref) and compiled with
+that class's interpolation constraints.
+"""
 function add_psd_matrix!(pep::PEP, matrix_of_expressions)
     push!(pep.list_of_psd, PSDMatrix(matrix_of_expressions))
     return pep.list_of_psd[end]
@@ -182,6 +282,25 @@ struct _PEPModelBuild
     class_constraints::Vector{Constraint}
 end
 
+"""
+    DualPEPCertificate
+
+Store the solution of the explicit conic dual generated by [`solve_dual!`](@ref),
+including scalar multipliers, PSD multipliers, model handles, and solver
+statuses.
+
+# Fields
+- `dual_value`: objective value of the explicit dual model.
+- `α`: multipliers for performance-metric epigraph constraints.
+- `λ`: multipliers for inequality initial/general conditions.
+- `ν`: multipliers for equality initial/general conditions.
+- `θ`: multipliers for scalar interpolation constraints.
+- `S`: dual residual matrix for the main Gram PSD constraint.
+- `Y`: PSD multipliers for global and class-generated PSD blocks.
+- `primal_model`, `dual_model`: JuMP model handles.
+- `mappings`: symbolic objects associated with the multiplier arrays.
+- `termination_status`, `primal_status`, `dual_status`: solver statuses.
+"""
 struct DualPEPCertificate
     dual_value::Float64
     α::Vector{Float64}
@@ -415,6 +534,22 @@ function _apply_psd_duals_from_dual_model!(dual_model::Model, packs)
     return Y_values
 end
 
+"""
+    solve_dual!(pep; solver=Clarabel.Optimizer, verbose=true)
+
+Build the primal SDP for `pep`, dualize it with `Dualization.jl`, solve the
+explicit dual model, and return a [`DualPEPCertificate`](@ref).
+
+This routine is useful when the dual multipliers themselves are part of the
+output, for example when reconstructing a proof certificate for a worst-case
+bound. It also writes scalar and PSD dual values back to the symbolic
+constraints so that [`eval_dual`](@ref) can be used afterwards.
+
+# Arguments
+- `pep::PEP`: symbolic performance estimation problem.
+- `solver`: JuMP optimizer constructor used for the dual model.
+- `verbose`: print model-building and solver progress when true.
+"""
 function solve_dual!(pep::PEP;
     solver=Clarabel.Optimizer,
     verbose::Bool=true)
@@ -523,6 +658,39 @@ function _logdet_dimension_reduction!(model::JuMP.Model, G, objective, wc_value:
 end
 
 
+"""
+    solve!(pep; solver=Clarabel.Optimizer, verbose=true, tracetrick=false,
+           logdetiters=0, eig_regularization=1e-3,
+           tol_dimension_reduction=1e-5, return_full_model=false)
+
+Build and solve the primal SDP associated with `pep`. Return the worst-case
+value unless `return_full_model=true`, in which case solver variables,
+constraints, and residual data are returned as a named tuple.
+
+The constructed SDP uses a Gram matrix for all leaf [`Point`](@ref) objects and
+one scalar variable for each leaf [`Expression`](@ref). Initial conditions,
+performance metrics, interpolation constraints, and PSD blocks are translated
+into JuMP constraints before the model is optimized.
+
+# Arguments
+- `pep::PEP`: symbolic problem to solve.
+- `solver`: JuMP optimizer constructor, for example `Clarabel.Optimizer`.
+- `verbose`: print model-building and solver progress when true.
+- `tracetrick`: run a trace-minimization heuristic after the first solve.
+- `logdetiters`: number of log-det heuristic iterations for dimension
+  reduction.
+- `eig_regularization`: regularization used in the log-det heuristic.
+- `tol_dimension_reduction`: allowed objective degradation during dimension
+  reduction.
+- `return_full_model`: return JuMP model data instead of only the worst-case
+  value.
+
+# Returns
+The worst-case value as a `Float64`, or a named tuple with model internals when
+`return_full_model=true`.
+
+See also [`solve_dual!`](@ref), [`evaluate`](@ref), and [`eval_dual`](@ref).
+"""
 function solve!(pep::PEP;
     solver=Clarabel.Optimizer,
     verbose::Bool=true,

@@ -1,3 +1,35 @@
+@doc raw"""
+    LinearOperator(param; reuse_gradient=true)
+
+Represent the `LinearOperator` interpolation class in PEPit.jl.
+
+Implement the interpolation constraints of the class of linear operators.
+
+# Note
+
+    Operator values can be requested through `gradient`, and `function values` should not be used.
+
+# Class parameters
+- `L`: singular values upper bound
+- `T`: the adjunct linear operator
+
+Linear operators are characterized by the parameter $L$, hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, LinearOperator, param)
+```
+
+# Fields
+- `L`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+- `T`: class parameter or auxiliary state stored as `PEPFunction`.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct LinearOperator <: AbstractFunction
     L::Float64
     _PEPit_func::PEPFunction

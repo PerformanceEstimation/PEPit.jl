@@ -5,3 +5,9 @@
 *.log
 tutorials/.DS_Store
 .DS_Store
+/Manifest*.toml
+/docs/build/
+/docs/Manifest*.toml
+/docs/src/generated_examples/
+/docs/src/examples.md
+/docs/src/changelog.md

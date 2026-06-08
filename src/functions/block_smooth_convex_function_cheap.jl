@@ -1,3 +1,38 @@
+@doc raw"""
+    BlockSmoothConvexFunctionCheap(param; <keyword arguments>)
+
+Represent the `BlockSmoothConvexFunctionCheap` interpolation class in PEPit.jl.
+
+Implement necessary constraints for interpolation of the class of smooth convex functions by blocks.
+
+# Warning
+
+    Functions that are smooth by blocks and convex generally do not enjoy known interpolation conditions.
+    The conditions implemented in this class are necessary but a priori not sufficient for interpolation.
+    Hence, the numerical results obtained when using this class might be non-tight upper bounds.
+
+# Class parameters
+- `partition`: partitioning of the variables (in blocks).
+- `L`: smoothness parameters (one per block).
+
+Smooth convex functions by blocks are characterized by a list of parameters $L_i$ (one per block),
+hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, BlockSmoothConvexFunctionCheap, param)
+```
+
+# Fields
+- `partition`: class parameter or auxiliary state stored as `BlockPartition`.
+- `L`: class parameter or auxiliary state stored as `Vector{Float64}`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct BlockSmoothConvexFunctionCheap <: AbstractFunction
     partition::BlockPartition
     L::Vector{Float64}

@@ -1,3 +1,38 @@
+@doc raw"""
+    CocoerciveStronglyMonotoneOperatorExpensive(param; reuse_gradient=true)
+
+Represent the `CocoerciveStronglyMonotoneOperatorExpensive` interpolation class in PEPit.jl.
+
+Implement some necessary constraints verified by the class of cocoercive
+and strongly monotone (maximally) operators. Those conditions are presented in [1, Appendix F] and are
+stronger than those used in [2].
+
+# Note
+
+    Operator values can be requested through `gradient`, and `function values` should not be used.
+
+# Class parameters
+- `mu`: strong monotonicity parameter
+- `beta`: cocoercivity parameter
+
+Cocoercive operators are characterized by the parameters $\mu$ and $\beta$,
+hence can be instantiated as
+
+# Julia usage
+```julia
+problem = PEP()
+param = OrderedDict("L" => 1.0)  # adapt keys to the class
+f = declare_function!(problem, CocoerciveStronglyMonotoneOperatorExpensive, param)
+```
+
+# Fields
+- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `beta`: class parameter or auxiliary state stored as `Float64`.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+
+# Implementation
+The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+"""
 mutable struct CocoerciveStronglyMonotoneOperatorExpensive <: AbstractFunction
     mu::Float64
     beta::Float64
