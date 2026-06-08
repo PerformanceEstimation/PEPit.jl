@@ -1,6 +1,6 @@
 # PEPit.jl
 
-[![Documentation](https://img.shields.io/badge/Documentation-stable-purple.svg)](https://PerformanceEstimation.github.io/PEPit.jl/stable/)
+[![Documentation](https://img.shields.io/badge/Documentation-dev-purple.svg)](https://PerformanceEstimation.github.io/PEPit.jl/dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/badge/Release-v0.1.2-blue.svg)](https://github.com/PerformanceEstimation/PEPit.jl/releases/tag/v0.1.2)
 
