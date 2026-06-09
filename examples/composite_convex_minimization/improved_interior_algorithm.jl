@@ -76,6 +76,7 @@ SIAM Journal on Optimization 16.3 (2006): 697-725.](https://epubs.siam.org/doi/p
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_improved_interior_algorithm(1.0, 1.0, 1.0, 1.0, 5; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.06807, 0.111111)
 ```
 """
 function wc_improved_interior_algorithm(L, mu, c, lam, n; verbose=true)

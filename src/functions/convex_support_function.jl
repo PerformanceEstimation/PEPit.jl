@@ -1,28 +1,49 @@
 @doc raw"""
-    ConvexSupportFunction(param; reuse_gradient=false)
+    ConvexSupportFunction(param=OrderedDict(); reuse_gradient=false)
 
-Represent the `ConvexSupportFunction` interpolation class in PEPit.jl.
+Interpolation class of closed convex support functions, optionally with a
+bounded Lipschitz constant ``M`` (equivalently, support functions of sets
+contained in a ball of radius ``M``).
 
-Implement interpolation constraints for the class of closed convex support functions.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `M`: upper bound on the Lipschitz constant
+- `param["M"]` (optional, default `Inf`): upper bound ``M`` on the Lipschitz constant.
 
-Convex support functions are characterized by a parameter `M`, hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)``, where
+``g_i`` is a subgradient of the support function at ``x_i`` (that is, a
+maximizing element of the underlying set), the following constraints are added
+(see [1]):
+
+```math
+\begin{aligned}
+\langle g_i, x_i \rangle - f_i & = 0 && \text{for all } i, \\
+\|g_i\|^2 & \leqslant M^2 && \text{for all } i \text{ (added when } M < \infty\text{)}, \\
+\langle x_j, g_i - g_j \rangle & \leqslant 0 && \text{for all } i \neq j.
+\end{aligned}
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("M" => 1.0)
 f = declare_function!(problem, ConvexSupportFunction, param)
 ```
 
 # Fields
-- `M`: class parameter or auxiliary state stored as `Float64`.
+- `M::Float64`: Lipschitz constant bound ``M``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Taylor, J. Hendrickx, F. Glineur (2017).
+Exact worst-case performance of first-order methods for composite convex
+optimization. SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516.pdf)
+
+See also [`declare_function!`](@ref), [`ConvexFunction`](@ref), and
+[`ConvexIndicatorFunction`](@ref).
 """
 mutable struct ConvexSupportFunction <: AbstractFunction
     M::Float64

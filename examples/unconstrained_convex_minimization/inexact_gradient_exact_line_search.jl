@@ -80,6 +80,7 @@ line search for smooth strongly convex functions. Optimization Letters, 11(7), 1
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_inexact_gradient_exact_line_search(1.0, 0.1, 0.1, 2; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.518917, 0.518917)
 ```
 """
 function wc_inexact_gradient_exact_line_search(L, mu, epsilon, n; verbose=true)

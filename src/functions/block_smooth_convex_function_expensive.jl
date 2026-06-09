@@ -1,39 +1,81 @@
 @doc raw"""
-    BlockSmoothConvexFunctionExpensive(param; <keyword arguments>)
+    BlockSmoothConvexFunctionExpensive(param; reuse_gradient=true)
 
-Represent the `BlockSmoothConvexFunctionExpensive` interpolation class in PEPit.jl.
+Class of convex functions that are smooth by blocks (with one smoothness
+parameter ``L_k`` per block of a [`BlockPartition`](@ref)), modeled through the
+strengthened necessary interpolation constraints of [2, Section 3.1]. Compared
+with [`BlockSmoothConvexFunctionCheap`](@ref), the constraints are tighter but
+significantly more expensive (they involve one PSD block per triplet of oracle
+points and pair of blocks).
 
-The `RefinedBlockSmoothConvexFunctionExpensive` class overwrites the `add_class_constraints` method
-of [`PEPFunction`](@ref), by implementing necessary constraints for interpolation of the class of
-smooth convex functions by blocks. The implemented constraint is that of [2, Section 3.1].
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-# Warning
-
-    Functions that are smooth by blocks and convex generally do not enjoy known interpolation conditions.
-    The conditions implemented in this class are necessary but a priori not sufficient for interpolation.
-    Hence, the numerical results obtained when using this class might be non-tight upper bounds.
+!!! warning
+    Functions that are smooth by blocks and convex generally do not enjoy known
+    interpolation conditions. The conditions implemented in this class are
+    necessary but a priori not sufficient for interpolation. Hence, the
+    numerical results obtained when using this class might be non-tight upper
+    bounds.
 
 # Class parameters
-- `partition`: partitioning of the variables (in blocks).
-- `L`: smoothness parameters (one per block).
+- `param["partition"]`: the [`BlockPartition`](@ref) of the variables.
+- `param["L"]`: smoothness parameters (a vector with one entry per block, or a scalar for a single block).
 
-Smooth convex functions by blocks are characterized by a list of parameters $L_i$ (one per block),
-hence can be instantiated as
+# Necessary conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` and
+denoting by ``v^{(m)}`` the block-``m`` component of a point ``v``, the
+following holds for every triplet of oracle points ``(i, j, k)`` and every pair
+of blocks ``(m, l)``: defining the block-``m`` smooth-convex surpluses
+
+```math
+\begin{aligned}
+A & = f_i - f_k - \langle g_k, x_i - x_k \rangle - \frac{1}{2 L_m} \|g_i^{(m)} - g_k^{(m)}\|^2, \\
+B & = f_i - f_j - \langle g_j, x_i - x_j \rangle - \frac{1}{2 L_m} \|g_i^{(m)} - g_j^{(m)}\|^2, \\
+C & = \frac{1}{2 L_m} \|g_j^{(m)} - g_k^{(m)}\|^2 - \frac{1}{2 L_l} \|g_j^{(l)} - g_k^{(l)}\|^2,
+\end{aligned}
+```
+
+there exists a scalar slack ``\lambda \geqslant 0`` such that
+
+```math
+\begin{pmatrix} A & \tfrac{1}{2}(A + B + C) - \lambda \\
+\tfrac{1}{2}(A + B + C) - \lambda & B \end{pmatrix} \succeq 0.
+```
+
+The slack ``\lambda`` is modeled by a fresh [`Expression`](@ref) and the
+``2 \times 2`` condition by a [`PSDMatrix`](@ref); see [2, Section 3.1].
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+partition = declare_block_partition!(problem, 3)
+param = OrderedDict("partition" => partition, "L" => [1.0, 4.0, 10.0])
 f = declare_function!(problem, BlockSmoothConvexFunctionExpensive, param)
 ```
 
+!!! note
+    Smooth convex functions by blocks are necessarily differentiable, hence
+    `reuse_gradient` is set to `true`.
+
 # Fields
-- `partition`: class parameter or auxiliary state stored as `BlockPartition`.
-- `L`: class parameter or auxiliary state stored as `Vector{Float64}`.
+- `partition::BlockPartition`: partitioning of the variables.
+- `L::Vector{Float64}`: smoothness parameters, one per block.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] Z. Shi, R. Liu (2016).
+Better worst-case complexity analysis of the block coordinate descent method
+for large scale machine learning. In 2017 16th IEEE International Conference on
+Machine Learning and Applications (ICMLA).](https://arxiv.org/pdf/1608.04826.pdf)
+
+[[2] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+A constructive approach to strengthen algebraic descriptions of function and
+operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+See also [`declare_function!`](@ref), [`declare_block_partition!`](@ref), and
+[`BlockSmoothConvexFunctionCheap`](@ref).
 """
 mutable struct BlockSmoothConvexFunctionExpensive <: AbstractFunction
     partition::BlockPartition

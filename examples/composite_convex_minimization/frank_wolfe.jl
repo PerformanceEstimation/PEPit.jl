@@ -79,6 +79,7 @@ In 30th International Conference on Machine Learning (ICML).](http://proceedings
 # Julia usage
 ```julia
 PEPit_tau, theoretical_tau = wc_frank_wolfe(1.0, 1.0, Inf, nothing, 10; verbose=true)
+# Returns approximately: (PEPit_tau, theoretical_tau) = (0.07829, 0.166667)
 ```
 """
 function wc_frank_wolfe(L, D, R, center, n; verbose::Bool=true)

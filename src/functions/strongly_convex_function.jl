@@ -1,30 +1,43 @@
 @doc raw"""
     StronglyConvexFunction(param; reuse_gradient=false)
 
-Represent the `StronglyConvexFunction` interpolation class in PEPit.jl.
+Interpolation class of ``\mu``-strongly convex closed proper functions
+(strongly convex functions whose epigraphs are non-empty closed sets).
 
-Implement the interpolation constraints of the class of strongly convex closed proper functions (strongly convex
-functions whose epigraphs are non-empty closed sets).
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `mu`: strong convexity parameter
+- `param["mu"]`: strong convexity parameter ``\mu``.
 
-Strongly convex functions are characterized by the strong convexity parameter $\mu$,
-hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` of
+point, subgradient, and function value, the following constraint is added for
+every pair ``i \neq j`` (see [1]):
+
+```math
+f_i - f_j \geqslant \langle g_j, x_i - x_j \rangle + \frac{\mu}{2} \|x_i - x_j\|^2.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("mu" => 0.1)
 f = declare_function!(problem, StronglyConvexFunction, param)
 ```
 
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong convexity parameter ``\mu``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Taylor, J. Hendrickx, F. Glineur (2017).
+Smooth strongly convex interpolation and exact worst-case performance of
+first-order methods. Mathematical Programming, 161(1-2), 307-345.](https://arxiv.org/pdf/1502.05666.pdf)
+
+See also [`declare_function!`](@ref), [`ConvexFunction`](@ref), and
+[`SmoothStronglyConvexFunction`](@ref).
 """
 mutable struct StronglyConvexFunction <: AbstractFunction
     mu::Float64

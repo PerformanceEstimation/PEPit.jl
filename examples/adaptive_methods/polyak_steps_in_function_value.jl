@@ -83,6 +83,7 @@ In Conference on Learning Theory (COLT).](https://arxiv.org/pdf/2002.00915.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_polyak_steps_in_function_value(1.0, 0.1, 2 / (1 + 0.1); verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.669421, 0.669421)
 ```
 """
 function wc_polyak_steps_in_function_value(L, mu, gamma; verbose=true)

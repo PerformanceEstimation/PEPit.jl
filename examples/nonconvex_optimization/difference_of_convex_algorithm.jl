@@ -70,6 +70,7 @@ Journal of Optimization Theory and Applications, 202(1), 475-496.](https://arxiv
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_difference_of_convex_algorithm(mu1, mu2, L1, L2, 5, 0; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.491131, 0.491131)
 ```
 """
 function wc_difference_of_convex_algorithm(mu1, mu2, L1, L2, n, alpha=0; solver=Clarabel.Optimizer, verbose=true)

@@ -1,29 +1,51 @@
 @doc raw"""
-    ConvexLipschitzFunction(param; <keyword arguments>)
+    ConvexLipschitzFunction(param; reuse_gradient=false)
 
-Represent the `ConvexLipschitzFunction` interpolation class in PEPit.jl.
+Interpolation class of convex, closed, and proper (CCP) functions that are
+``M``-Lipschitz continuous.
 
-Implement the interpolation constraints of the class of convex closed proper (CCP)
-Lipschitz continuous functions.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `M`: Lipschitz parameter
+- `param["M"]`: Lipschitz continuity parameter ``M``.
 
-CCP Lipschitz continuous functions are characterized by a parameter `M`, hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` of
+point, subgradient, and function value, the following constraints are added
+(see [1]):
+
+```math
+\begin{aligned}
+f_i - f_j & \geqslant \langle g_j, x_i - x_j \rangle && \text{for all } i \neq j, \\
+\|g_i\|^2 & \leqslant M^2 && \text{for all } i \text{ (added when } M < \infty\text{)}.
+\end{aligned}
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("M" => 1.0)
 f = declare_function!(problem, ConvexLipschitzFunction, param)
 ```
 
+!!! note
+    With `M == Inf` the Lipschitz bound adds no constraint, so the class
+    coincides with [`ConvexFunction`](@ref); the constructor emits a warning in
+    that case.
+
 # Fields
-- `M`: class parameter or auxiliary state stored as `Float64`.
+- `M::Float64`: Lipschitz continuity parameter ``M``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Taylor, J. Hendrickx, F. Glineur (2017).
+Exact worst-case performance of first-order methods for composite convex
+optimization. SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516.pdf)
+
+See also [`declare_function!`](@ref), [`ConvexFunction`](@ref), and
+[`SmoothConvexLipschitzFunction`](@ref).
 """
 mutable struct ConvexLipschitzFunction <: AbstractFunction
     M::Float64

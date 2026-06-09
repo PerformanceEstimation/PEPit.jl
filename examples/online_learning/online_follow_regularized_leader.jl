@@ -79,6 +79,7 @@ Optimized projection-free algorithms for online learning: construction and worst
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_online_follow_regularized_leader(M, D, n; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.707107, 0.707107)
 ```
 """
 function wc_online_follow_regularized_leader(M::Real, D::Real, n::Int; solver=Clarabel.Optimizer, verbose=true)

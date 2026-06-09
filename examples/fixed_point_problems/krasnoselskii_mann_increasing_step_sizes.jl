@@ -34,15 +34,14 @@ The KM method is described by
 x_{t+1} = \frac{1}{t + 2} x_{t} + \left(1 - \frac{1}{t + 2}\right) Ax_{t}.
 ```
 
-**Reference**: This scheme was first studied using PEPs in [1].
+# References
+
+This scheme was first studied using PEPs in [1].
 
 [[1] F. Lieder (2018).
-Projection Based Methods for Conic Linear Programming
-Optimal First Order Complexities and Norm Constrained Quasi Newton Methods.
-PhD thesis, HHU Dusseldorf.](https://docserv.uni-duesseldorf.de/servlets/DerivateServlet/Derivate-49971/Dissertation.pdf)
-
-# References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+Projection Based Methods for Conic Linear Programming — Optimal First Order
+Complexities and Norm Constrained Quasi Newton Methods.
+PhD thesis, HHU Düsseldorf.](https://docserv.uni-duesseldorf.de/servlets/DerivateServlet/Derivate-49971/Dissertation.pdf)
 
 # Arguments
 - `n`: number of iterations.
@@ -56,6 +55,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_krasnoselskii_mann_increasing_step_sizes(3; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.119634, nothing)
 ```
 """
 function wc_krasnoselskii_mann_increasing_step_sizes(n; solver=Clarabel.Optimizer, verbose=true)

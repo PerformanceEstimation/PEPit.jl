@@ -63,7 +63,12 @@ f(x_n)-f_\star \leqslant \frac{L}{2 u_t} \|x_0-x_\star\|^2.
 ```
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+The detailed approach is available in [1, Appendix A.3].
+
+[[1] B. Goujaud, A. Taylor, A. Dieuleveut (2022).
+Optimal first-order methods for convex functions with a quadratic upper
+bound.](https://arxiv.org/pdf/2205.15033.pdf)
 
 # Arguments
 - `L`: smoothness or Lipschitz parameter, as used by the modeled class.
@@ -78,6 +83,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_qg_convex_decreasing(1.0, 6; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.105547, 0.105547)
 ```
 """
 function wc_gradient_descent_qg_convex_decreasing(L, n; solver=Clarabel.Optimizer, verbose=true)

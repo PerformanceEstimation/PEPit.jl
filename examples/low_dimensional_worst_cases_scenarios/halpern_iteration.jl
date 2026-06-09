@@ -68,6 +68,7 @@ and Euclidean distance matrices. American Control Conference (ACC).](https://web
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_halpern_iteration(10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.033048, 0.033058)
 ```
 """
 function wc_halpern_iteration(n; solver=Clarabel.Optimizer, verbose=true)

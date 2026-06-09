@@ -92,6 +92,7 @@ via potential functions. Conference on Learning Theory (COLT).](https://arxiv.or
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_sgd_overparametrized(1.0, 0.1, 2.3, 5; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (1.69, 1.69)
 ```
 """
 function wc_sgd_overparametrized(L, mu, gamma, n; solver=Clarabel.Optimizer, verbose=true)

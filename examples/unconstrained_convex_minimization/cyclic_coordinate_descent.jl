@@ -61,6 +61,7 @@ In 2017 16th IEEE International Conference on Machine Learning and Applications 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_cyclic_coordinate_descent(L, 9; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (1.489276, nothing)
 ```
 """
 function wc_cyclic_coordinate_descent(L, n; solver=Clarabel.Optimizer, verbose=true)

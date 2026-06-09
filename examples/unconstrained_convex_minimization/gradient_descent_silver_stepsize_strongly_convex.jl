@@ -79,6 +79,7 @@ arXiv preprint arXiv:2309.07879.](https://arxiv.org/abs/2309.07879)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_silver_stepsize_strongly_convex(3.2, 0.1, 8; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.22145, 0.22145)
 ```
 """
 function wc_gradient_descent_silver_stepsize_strongly_convex(L, mu, n; solver=Clarabel.Optimizer, verbose=true)

@@ -73,6 +73,7 @@ SIAM journal on imaging sciences, 2009, vol. 2, no 1, p. 183-202.](https://www.c
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_gradient_convex(0, 1, 1; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.166667, 0.5)
 ```
 """
 function wc_accelerated_gradient_convex(mu, L, n; solver=Clarabel.Optimizer, verbose=true)

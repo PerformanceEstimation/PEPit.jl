@@ -69,6 +69,7 @@ Optimization Letters, 11(7), 1185-1199.](https://link.springer.com/content/pdf/1
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_exact_line_search(1.0, 0.1, 2; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.448125, 0.448125)
 ```
 """
 function wc_gradient_exact_line_search(L, mu, n; verbose=true)

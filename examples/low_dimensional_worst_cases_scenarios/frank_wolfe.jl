@@ -57,7 +57,7 @@ F(x_n) - F(x_\star) \leqslant \frac{2L D^2}{n+2}.
 # References
 The algorithm is presented in, among others, [1, 2]. The logdet heuristic is presented in [3].
 
-[1] M .Frank, P. Wolfe (1956).
+[1] M. Frank, P. Wolfe (1956).
 An algorithm for quadratic programming.
 Naval research logistics quarterly, 3(1-2), 95-110.
 
@@ -81,6 +81,7 @@ and Euclidean distance matrices. American Control Conference (ACC).](https://web
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_frank_wolfe(1.0, 1.0, 10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.07828, 0.166667)
 ```
 """
 function wc_frank_wolfe(L, D, n; solver=Clarabel.Optimizer, verbose=true)

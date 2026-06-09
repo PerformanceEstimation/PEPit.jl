@@ -76,6 +76,7 @@ SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_gradient_convex_simplified(0, 1, 1; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.166667, 0.166667)
 ```
 """
 function wc_accelerated_gradient_convex_simplified(mu, L, n; solver=Clarabel.Optimizer, verbose=true)

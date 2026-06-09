@@ -73,6 +73,7 @@ International Conference on Machine Learning.](https://arxiv.org/pdf/2303.15876.
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_inconsistent_halpern_iteration(25; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.025083, 0.036642)
 ```
 """
 function wc_inconsistent_halpern_iteration(n; verbose=true)

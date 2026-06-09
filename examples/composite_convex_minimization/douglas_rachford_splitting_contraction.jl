@@ -88,6 +88,7 @@ Applied and Computational Mathematics 15(1), 3-43.](https://web.stanford.edu/~bo
 # Julia usage
 ```julia
 PEPit_tau, theoretical_tau = wc_douglas_rachford_splitting_contraction(0.1, 1.0, 3.0, 1.0, 2; verbose=true)
+# Returns approximately: (PEPit_tau, theoretical_tau) = (0.350128, 0.350128)
 ```
 """
 function wc_douglas_rachford_splitting_contraction(mu, L, alpha, theta, n; verbose=true)

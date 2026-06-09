@@ -62,7 +62,10 @@ post-processing implemented below, using the condition ratios
 $\kappa_g=\mu_g/L_g$ and $\kappa_M=\mu_M/L_M$.
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+[[1] N. Bousselmi, J. Hendrickx, F. Glineur (2023).
+Interpolation Conditions for Linear Operators and applications to Performance
+Estimation Problems. arXiv preprint.](https://arxiv.org/pdf/2302.08781.pdf)
 
 # Arguments
 - `mug`: the strong convexity parameter of $g(y)$.
@@ -82,6 +85,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, 1 / (Lg * LM^2), 3; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.163809, 0.16379)
 ```
 """
 function wc_gradient_descent_lc(mug, Lg, typeM, muM, LM, gamma, n; solver=Clarabel.Optimizer, verbose=true)

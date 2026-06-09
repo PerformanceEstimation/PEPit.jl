@@ -1,32 +1,57 @@
 @doc raw"""
     NegativelyComonotoneOperator(param; reuse_gradient=true)
 
-Represent the `NegativelyComonotoneOperator` interpolation class in PEPit.jl.
+Class of ``\rho``-negatively comonotone operators, modeled through necessary
+constraints (see, e.g., [1] for a discussion of this class of nonmonotone
+operators).
 
-Implement some necessary constraints of the class of negatively comonotone operators.
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-# Note
+!!! warning
+    Those constraints might not be sufficient, thus the characterized class
+    might contain more operators.
 
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `rho`: comonotonicity parameter (>0)
+- `param["rho"]`: comonotonicity parameter ``\rho`` (``> 0``).
 
-Negatively comonotone operators are characterized by the parameter $\rho$, hence can be instantiated as
+# Necessary conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the following constraint is added for
+every pair ``i \neq j``:
+
+```math
+\langle g_i - g_j, x_i - x_j \rangle \geqslant -\rho \|g_i - g_j\|^2.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, NegativelyComonotoneOperator, param)
+param = OrderedDict("rho" => 0.1)
+op = declare_function!(problem, NegativelyComonotoneOperator, param)
 ```
 
+!!! note
+    With `rho == 0` the class reduces to monotone operators; the constructor
+    emits a warning suggesting [`MonotoneOperator`](@ref) in that case.
+
 # Fields
-- `rho`: class parameter or auxiliary state stored as `Float64`.
+- `rho::Float64`: comonotonicity parameter ``\rho``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] E. Gorbunov, A. Taylor, S. Horváth, G. Gidel (2023).
+Convergence of proximal point and extragradient-based methods beyond
+monotonicity: the case of negative comonotonicity. International Conference on
+Machine Learning.](https://proceedings.mlr.press/v202/gorbunov23a/gorbunov23a.pdf)
+
+See also [`declare_function!`](@ref), [`MonotoneOperator`](@ref), and
+[`CocoerciveOperator`](@ref).
 """
 mutable struct NegativelyComonotoneOperator <: AbstractFunction
     rho::Float64

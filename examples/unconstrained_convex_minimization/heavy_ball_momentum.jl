@@ -86,6 +86,7 @@ European Control Conference (ECC).](https://arxiv.org/pdf/1412.7457.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_heavy_ball_momentum(mu, L, alpha, beta, 2; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.753493, 0.9025)
 ```
 """
 function wc_heavy_ball_momentum(mu, L, alpha, beta, n; solver=Clarabel.Optimizer, verbose=true)

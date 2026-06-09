@@ -86,6 +86,7 @@ Optimal first-order methods for convex functions with a quadratic upper bound.](
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_heavy_ball_momentum_qg_convex(1, 5; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.083333, 0.083333)
 ```
 """
 function wc_heavy_ball_momentum_qg_convex(L, n; solver=Clarabel.Optimizer, verbose=true)

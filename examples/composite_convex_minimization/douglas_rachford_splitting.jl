@@ -78,6 +78,7 @@ In 56th IEEE Conference on Decision and Control (CDC).](https://github.com/Adrie
 # Julia usage
 ```julia
 PEPit_tau, theoretical_tau = wc_douglas_rachford_splitting(1.0, 1.0, 1.0, 9; verbose=true)
+# Returns approximately: (PEPit_tau, theoretical_tau) = (0.027792, 0.0278)
 ```
 """
 function wc_douglas_rachford_splitting(L, alpha, theta, n; verbose=true)

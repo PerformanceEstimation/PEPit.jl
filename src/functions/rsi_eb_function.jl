@@ -1,31 +1,53 @@
 @doc raw"""
     RsiEbFunction(param; reuse_gradient=false)
 
-Represent the `RsiEbFunction` interpolation class in PEPit.jl.
+Interpolation class of functions verifying the "lower" restricted secant
+inequality (``\text{RSI}^-``) and the "upper" error bound (``\text{EB}^+``).
 
-Implement the interpolation constraints of the class of functions verifying
-the "lower" restricted secant inequality ($\text{RSI}^-$) and the "upper" error bound ($\text{EB}^+$).
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `mu`: Restricted sequent inequality parameter
-- `L`: Error bound parameter
-$\text{RSI}^-$ and $\text{EB}^+$ functions are characterized by parameters $\mu$ and `L`,
-hence can be instantiated as
+- `param["mu"]`: restricted secant inequality parameter ``\mu``.
+- `param["L"]`: error bound parameter ``L``.
+
+# Interpolation conditions
+A stationary point ``(x_\star, g_\star = 0, f_\star)`` is created automatically
+if none was requested through [`stationary_point!`](@ref). Associating with
+each oracle call ``j`` the triplet ``(x_j, g_j, f_j)`` of point, subgradient,
+and function value, the following constraints are added for every stationary
+triplet and every ``j`` with ``x_j \neq x_\star``:
+
+```math
+\begin{aligned}
+\langle g_\star - g_j, x_\star - x_j \rangle & \geqslant \mu \|x_\star - x_j\|^2
+&& (\text{RSI}^-), \\
+\|g_\star - g_j\|^2 & \leqslant L^2 \|x_\star - x_j\|^2 && (\text{EB}^+).
+\end{aligned}
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("mu" => 0.1, "L" => 1.0)
 f = declare_function!(problem, RsiEbFunction, param)
 ```
 
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: restricted secant inequality parameter ``\mu``.
+- `L::Float64`: error bound parameter ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+A definition of the class of ``\text{RSI}^-`` and ``\text{EB}^+`` functions can
+be found in [1].
+
+[[1] C. Guille-Escuret, B. Goujaud, A. Ibrahim, I. Mitliagkas (2022).
+Gradient Descent Is Optimal Under Lower Restricted Secant Inequality And Upper
+Error Bound. arXiv 2203.00342.](https://arxiv.org/pdf/2203.00342.pdf)
+
+See also [`declare_function!`](@ref) and [`stationary_point!`](@ref).
 """
 mutable struct RsiEbFunction <: AbstractFunction
     mu::Float64

@@ -64,6 +64,7 @@ Lecture Notes in Statistics. Vol. 37. pp. 28-47.](https://link.springer.com/chap
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_dykstra(10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.025746, nothing)
 ```
 """
 function wc_dykstra(n; solver=Clarabel.Optimizer, verbose=true)

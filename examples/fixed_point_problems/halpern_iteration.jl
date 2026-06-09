@@ -69,6 +69,7 @@ Optimization Letters, 15(2), 405-418.](http://www.optimization-online.org/DB_FIL
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_halpern_iteration(25; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.005917, 0.005917)
 ```
 """
 function wc_halpern_iteration(n; verbose=true)

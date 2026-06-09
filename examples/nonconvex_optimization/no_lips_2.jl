@@ -83,6 +83,7 @@ DISCLAIMER: This example requires some experience with PEPit and PEPs (see Secti
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_no_lips_2(L, gamma, 3; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.333333, 0.333333)
 ```
 """
 function wc_no_lips_2(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

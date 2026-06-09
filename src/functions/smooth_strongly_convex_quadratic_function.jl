@@ -1,31 +1,67 @@
 @doc raw"""
     SmoothStronglyConvexQuadraticFunction(param; reuse_gradient=true)
 
-Represent the `SmoothStronglyConvexQuadraticFunction` interpolation class in PEPit.jl.
+Interpolation class of ``L``-smooth ``\mu``-strongly convex quadratic
+functions, that is, functions of the form
+``f(x) = \frac{1}{2} \langle x - x_\star, H (x - x_\star) \rangle + f_\star``
+with ``\mu I \preceq H \preceq L I``.
 
-Implement interpolation constraints of the class of smooth strongly convex quadratic functions.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `mu`: strong convexity parameter
-- `L`: smoothness parameter
+- `param["mu"]`: strong convexity parameter ``\mu``.
+- `param["L"]`: smoothness parameter ``L``.
 
-Smooth strongly convex quadratic functions are characterized by parameters $\mu$ and `L`,
-hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` of
+point, gradient, and function value, and denoting by
+``(x_\star, 0, f_\star)`` the stationary point of the quadratic, the following
+constraints are added (see [1]):
+
+```math
+\begin{aligned}
+f_i - f_\star & = \tfrac{1}{2} \langle g_i, x_i - x_\star \rangle && \text{for all } i, \\
+\langle g_j, x_i - x_\star \rangle & = \langle g_i, x_j - x_\star \rangle && \text{for all } i < j,
+\end{aligned}
+```
+
+together with the PSD constraint ``T \succeq 0``, where ``T`` is the matrix of
+expressions with entries
+
+```math
+T_{ij} = (L + \mu) \langle g_i, x_j - x_\star \rangle - \langle g_i, g_j \rangle
+- \mu L \langle x_i - x_\star, x_j - x_\star \rangle,
+```
+
+which is the Gram-space formulation of ``(L I - H)(H - \mu I) \succeq 0``.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("mu" => 0.1, "L" => 1.0)
 f = declare_function!(problem, SmoothStronglyConvexQuadraticFunction, param)
 ```
 
+!!! note
+    The constructor automatically creates the (unique) stationary point of the
+    quadratic; [`stationary_point!`](@ref) returns that same point instead of
+    creating a new one. Smooth strongly convex quadratic functions are
+    necessarily differentiable, hence `reuse_gradient` is set to `true`.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong convexity parameter ``\mu``.
+- `L::Float64`: smoothness parameter ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] N. Bousselmi, J. Hendrickx, F. Glineur (2023).
+Interpolation Conditions for Linear Operators and applications to Performance
+Estimation Problems. arXiv preprint.](https://arxiv.org/pdf/2302.08781.pdf)
+
+See also [`declare_function!`](@ref), [`stationary_point!`](@ref),
+[`SmoothStronglyConvexFunction`](@ref), and [`PSDMatrix`](@ref).
 """
 mutable struct SmoothStronglyConvexQuadraticFunction <: AbstractFunction
     mu::Float64

@@ -45,13 +45,10 @@ for $n \geqslant 1$,
 \|x_n - y_{n-1}\|^2 \leqslant  \frac{1}{n^2}  \|x_0 - x_\star\|^2.
 ```
 
-**Reference**:
+# References
 
 [[1] D. Kim (2021). Accelerated proximal point method for maximally monotone operators.
 Mathematical Programming, 1-31.](https://arxiv.org/pdf/1905.05149v4.pdf)
-
-# References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
 
 # Arguments
 - `alpha`: algorithm parameter used in the update rule.
@@ -66,6 +63,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 wc_accelerated_proximal_point(2.0, 10; verbose=1)
+# Returns approximately: (τ_PEPit, τ_theory) = (0.01, 0.01)
 ```
 """
 function wc_accelerated_proximal_point(alpha::Real, n::Int; solver=Clarabel.Optimizer, verbose::Int=1)

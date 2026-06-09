@@ -89,6 +89,7 @@ Mathematical Programming.](https://arxiv.org/pdf/1912.13494.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_inexact_gradient_descent(1.0, 0.1, 0.1, 2; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.518917, 0.518917)
 ```
 """
 function wc_inexact_gradient_descent(L, mu, epsilon, n; solver=Clarabel.Optimizer, verbose=true)

@@ -64,6 +64,7 @@ SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_alternate_projections(10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.01885, nothing)
 ```
 """
 function wc_alternate_projections(n; solver=Clarabel.Optimizer, verbose=true)

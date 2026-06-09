@@ -72,6 +72,7 @@ Optimal first-order methods for convex functions with a quadratic upper bound.](
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_qg_convex(L, 0.2 / L, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.192308, 0.192308)
 ```
 """
 function wc_gradient_descent_qg_convex(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

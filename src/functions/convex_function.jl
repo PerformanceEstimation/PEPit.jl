@@ -1,25 +1,36 @@
 @doc raw"""
-    ConvexFunction(param; <keyword arguments>)
+    ConvexFunction(param=OrderedDict(); reuse_gradient=false)
 
-Represent the `ConvexFunction` interpolation class in PEPit.jl.
-
-Implement the interpolation constraints of the class of convex, closed and proper (CCP) functions (i.e., convex
+Interpolation class of convex, closed, and proper (CCP) functions (convex
 functions whose epigraphs are non-empty closed sets).
 
-General CCP functions are not characterized by any parameter, hence can be instantiated as
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
+
+# Class parameters
+General CCP functions are not characterized by any parameter, so `param` may be
+left empty.
+
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` of
+point, subgradient, and function value, the following constraint is added for
+every pair ``i \neq j``:
+
+```math
+f_i - f_j \geqslant \langle g_j, x_i - x_j \rangle.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, ConvexFunction, param)
+f = declare_function!(problem, ConvexFunction, OrderedDict())
 ```
 
 # Fields
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+See also [`declare_function!`](@ref), [`StronglyConvexFunction`](@ref),
+[`SmoothConvexFunction`](@ref), and [`ConvexLipschitzFunction`](@ref).
 """
 mutable struct ConvexFunction <: AbstractFunction
     _PEPit_func::PEPFunction

@@ -71,6 +71,7 @@ Optimization Letters, 16(6), 1649-1661.](https://arxiv.org/pdf/2104.05468v3.pdf)
 # Julia usage
 ```julia
 PEPit_val, theoretical_val = wc_gradient_descent(1.0, 1.0, 5; verbose=true)
+# Returns approximately: (PEPit_val, theoretical_val) = (0.266667, 0.266667)
 ```
 """
 function wc_gradient_descent(L, gamma, n; verbose=true)

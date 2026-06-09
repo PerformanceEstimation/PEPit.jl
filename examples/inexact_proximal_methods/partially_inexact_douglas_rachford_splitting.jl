@@ -90,6 +90,7 @@ arXiv 2006.06041v2.](https://arxiv.org/pdf/2006.06041v2.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_partially_inexact_douglas_rachford_splitting(0.1, 5, 5, 1.4, 0.2; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.281206, 0.281206)
 ```
 """
 function wc_partially_inexact_douglas_rachford_splitting(mu, L, n, gamma, sigma; solver=Clarabel.Optimizer, verbose=true)

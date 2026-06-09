@@ -78,6 +78,7 @@ analyses via potential functions. In Conference on Learning Theory (COLT).](http
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_randomized_coordinate_descent_smooth_strongly_convex(L, mu, gamma, 2; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.834711, 0.834711)
 ```
 """
 function wc_randomized_coordinate_descent_smooth_strongly_convex(L, mu, gamma, d; solver=Clarabel.Optimizer, verbose=true)

@@ -76,6 +76,7 @@ Mathematical Programming, 1-43.](https://arxiv.org/pdf/1911.08510.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_no_lips_in_bregman_divergence(L, gamma, 10; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.022222, 0.022222)
 ```
 """
 function wc_no_lips_in_bregman_divergence(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

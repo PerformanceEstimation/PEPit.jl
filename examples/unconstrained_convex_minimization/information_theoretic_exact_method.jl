@@ -83,6 +83,7 @@ Mathematical Programming.](https://arxiv.org/pdf/2101.09741.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_information_theoretic(0.001, 1.0, 15; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.756605, 0.756605)
 ```
 """
 function wc_information_theoretic(mu, L, n; solver=Clarabel.Optimizer, verbose=true)

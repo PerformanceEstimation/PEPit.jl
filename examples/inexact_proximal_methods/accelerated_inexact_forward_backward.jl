@@ -95,6 +95,7 @@ arXiv:2106.15536v2.](https://arxiv.org/pdf/2106.15536v2.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_inexact_forward_backward(1.3, 0.45, 11; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.018734, 0.026944)
 ```
 """
 function wc_accelerated_inexact_forward_backward(L, zeta, n; verbose=true)

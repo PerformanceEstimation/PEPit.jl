@@ -83,6 +83,7 @@ In Conference on Learning Theory (COLT).](https://arxiv.org/pdf/2002.00915.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_polyak_steps_in_distance_to_optimum(1.0, 0.1, 2 / (1.0 + 0.1); solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.669421, 0.669421)
 ```
 """
 function wc_polyak_steps_in_distance_to_optimum(L, mu, gamma; solver=Clarabel.Optimizer, verbose=true)

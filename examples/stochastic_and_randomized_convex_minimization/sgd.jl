@@ -90,6 +90,7 @@ via potential functions. Conference on Learning Theory (COLT).](https://arxiv.or
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_sgd(1.0, 0.1, 0.7, 1.0, 2.0, 5; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (4.183001, 4.183001)
 ```
 """
 function wc_sgd(L, mu, gamma, v, R, n; verbose=true)

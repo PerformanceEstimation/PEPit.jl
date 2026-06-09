@@ -79,6 +79,7 @@ Journal of optimization theory and applications, 188(1), 192-219.](https://arxiv
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_optimized_gradient_for_gradient(3.0, 4; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.307007, 0.307007)
 ```
 """
 function wc_optimized_gradient_for_gradient(L, n; solver=Clarabel.Optimizer, verbose=true)

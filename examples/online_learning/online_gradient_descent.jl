@@ -81,6 +81,7 @@ Online Convex Optimization and Integral Quadratic Constraints: A new approach to
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_online_gradient_descent(M, D, n; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.707107, 0.707107)
 ```
 """
 function wc_online_gradient_descent(M::Real, D::Real, n::Int; verbose = true)

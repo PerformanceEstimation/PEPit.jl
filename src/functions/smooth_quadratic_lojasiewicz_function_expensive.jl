@@ -1,39 +1,99 @@
 @doc raw"""
     SmoothQuadraticLojasiewiczFunctionExpensive(param; reuse_gradient=true)
 
-Represent the `SmoothQuadraticLojasiewiczFunctionExpensive` interpolation class in PEPit.jl.
+Class of ``L``-smooth (not necessarily convex) functions that also satisfy a
+quadratic Łojasiewicz inequality (sometimes also referred to as a
+Polyak-Łojasiewicz inequality) with parameter ``\mu``. Extensive descriptions
+of such classes of functions can be found in [1, 2]. The conditions
+implemented here are presented in [3, Proposition 3.4]; compared with
+[`SmoothQuadraticLojasiewiczFunctionCheap`](@ref), they are tighter but more
+expensive (two ``2 \times 2`` PSD blocks per ordered pair of oracle points).
 
-Implement some constraints (which are not necessary and sufficient for interpolation)
-for the class of smooth (not necessarily convex) functions that also satisfy a quadratic Lojasiewicz inequality
-(sometimes also referred to as a Polyak-Lojasiewicz inequality). Extensive descriptions of such classes of
-functions can be found in [1, 2].
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-The conditions implemented here are presented in [3, Proposition 3.4].
-
-# Warning
-
-    Smooth functions satisfying a Lojasiewicz property do not enjoy known interpolation conditions.
-    The conditions implemented in this class are necessary but a priori not sufficient for interpolation.
-    Hence, the numerical results obtained when using this class might be non-tight upper bounds.
+!!! warning
+    Smooth functions satisfying a Łojasiewicz property do not enjoy known
+    interpolation conditions. The conditions implemented in this class are
+    necessary but a priori not sufficient for interpolation. Hence, the
+    numerical results obtained when using this class might be non-tight upper
+    bounds.
 
 # Class parameters
-- `L`: smoothness parameter
-- `mu`: quadratic Lojasiewicz parameter
+- `param["mu"]`: quadratic Łojasiewicz parameter ``\mu`` (with ``0 \leqslant \mu \leqslant L``).
+- `param["L"]`: smoothness parameter ``L``.
+
+# Necessary conditions
+A stationary point ``(x_\star, g_\star = 0, f_\star)`` is created automatically
+if none was requested through [`stationary_point!`](@ref). Associating with
+each oracle call ``i`` the triplet ``(x_i, g_i, f_i)``, the two-sided
+Łojasiewicz bounds are added first:
+
+```math
+\frac{1}{2L} \|g_i\|^2 \leqslant f_i - f_\star \leqslant \frac{1}{2\mu} \|g_i\|^2
+\qquad \text{for all } i \text{ with } x_i \neq x_\star.
+```
+
+Then, for every ordered pair ``i \neq j``, defining the negated smoothness
+surplus and the Łojasiewicz surpluses
+
+```math
+\begin{aligned}
+A & = -(f_i - f_j) + \frac{1}{2} \langle g_i + g_j, x_i - x_j \rangle
++ \frac{1}{4L} \|g_i - g_j\|^2 - \frac{L}{4} \|x_i - x_j\|^2, \\
+B & = (L + \mu) \left( f_i - f_\star - \frac{1}{2L} \|g_i\|^2 \right), \qquad
+C = (L - \mu) \left( f_j - f_\star + \frac{1}{2L} \|g_j\|^2 \right),
+\end{aligned}
+```
+
+two slack [`Expression`](@ref)s ``s_{12}, s_{22}`` are created and the two
+coupled PSD constraints of [3, Proposition 3.4] are imposed, with
+``D = B - C - (L + 3\mu) A``:
+
+```math
+\begin{pmatrix} -(2L+\mu) A & s_{12} \\ s_{12} & s_{22} \end{pmatrix} \succeq 0,
+\quad
+\begin{pmatrix}
+-(2L+\mu) A - \frac{4\mu}{2L+\mu} s_{12} - D &
+s_{12} - \frac{\mu}{2L+\mu} s_{22} - \frac{L+\mu}{2} A + B \\
+s_{12} - \frac{\mu}{2L+\mu} s_{22} - \frac{L+\mu}{2} A + B &
+s_{22} - B
+\end{pmatrix} \succeq 0.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("mu" => 0.1, "L" => 1.0)
 f = declare_function!(problem, SmoothQuadraticLojasiewiczFunctionExpensive, param)
 ```
 
+!!! note
+    Smooth functions are necessarily differentiable, hence `reuse_gradient` is
+    set to `true`.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: quadratic Łojasiewicz parameter ``\mu``.
+- `L::Float64`: smoothness parameter ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] S. Lojasiewicz (1963).
+Une propriété topologique des sous-ensembles analytiques réels.
+Les équations aux dérivées partielles, 117 (1963), 87-89.](https://aif.centre-mersenne.org/item/10.5802/aif.1384.pdf)
+
+[[2] J. Bolte, A. Daniilidis, and A. Lewis (2007).
+The Łojasiewicz inequality for nonsmooth subanalytic functions with
+applications to subgradient dynamical systems. SIAM Journal on Optimization 17,
+1205-1223.](https://bolte.perso.math.cnrs.fr/Loja.pdf)
+
+[[3] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+A constructive approach to strengthen algebraic descriptions of function and
+operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+See also [`declare_function!`](@ref), [`stationary_point!`](@ref),
+[`SmoothFunction`](@ref), and [`SmoothQuadraticLojasiewiczFunctionCheap`](@ref).
 """
 mutable struct SmoothQuadraticLojasiewiczFunctionExpensive <: AbstractFunction
     mu::Float64

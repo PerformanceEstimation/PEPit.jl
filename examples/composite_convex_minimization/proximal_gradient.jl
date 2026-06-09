@@ -87,6 +87,7 @@ SIAM Journal on Optimization 26(1), 57-95.](https://arxiv.org/pdf/1408.3595.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_proximal_gradient(1.0, 0.1, 1.0, 2; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.6561, 0.6561)
 ```
 """
 function wc_proximal_gradient(L, mu, gamma, n; solver=Clarabel.Optimizer, verbose=true)

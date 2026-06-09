@@ -72,6 +72,7 @@ Mathematical Programming 145(1-2), 451-482.](https://arxiv.org/pdf/1206.3209.pdf
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent(L, 1 / L, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.166667, 0.166667)
 ```
 """
 function wc_gradient_descent(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

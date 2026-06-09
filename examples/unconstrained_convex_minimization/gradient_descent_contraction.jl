@@ -53,7 +53,7 @@ The **tight** theoretical guarantee is
 which is tight on simple quadratic functions.
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+No specific bibliographic reference is associated with this example.
 
 # Arguments
 - `L`: smoothness or Lipschitz parameter, as used by the modeled class.
@@ -70,6 +70,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_contraction(L, mu, gamma, n; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.81, 0.81)
 ```
 """
 function wc_gradient_descent_contraction(L, mu, gamma, n; solver=Clarabel.Optimizer, verbose=true)

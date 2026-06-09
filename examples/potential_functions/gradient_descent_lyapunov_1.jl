@@ -76,6 +76,7 @@ Conference on Learning Theory (COLT).](https://arxiv.org/pdf/1902.00947.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_lyapunov_1(1.0, 1.0, 10; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.0, 0.0)
 ```
 """
 function wc_gradient_descent_lyapunov_1(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

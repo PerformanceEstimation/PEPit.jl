@@ -77,6 +77,7 @@ convex optimization. SIAM Journal on Optimization, 27(3):1283-1313.](https://arx
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_inexact_accelerated_gradient(1.0, 0.1, 5; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.039388, 0.035714)
 ```
 """
 function wc_inexact_accelerated_gradient(L, epsilon, n; solver=Clarabel.Optimizer, verbose=true)

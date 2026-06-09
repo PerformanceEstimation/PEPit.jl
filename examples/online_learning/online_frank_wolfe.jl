@@ -82,6 +82,7 @@ Optimized projection-free algorithms for online learning: construction and worst
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_online_frank_wolfe(M, D, n; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.933013, 1.475576)
 ```
 """
 function wc_online_frank_wolfe(M::Real, D::Real, n::Int; solver = Clarabel.Optimizer, verbose = true)

@@ -69,6 +69,7 @@ for Constrained Monotone Variational Inequalities.](https://arxiv.org/pdf/2204.0
 # Julia usage
 ```julia
 wc_past_extragradient(5, 1 / 4, 1; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.060266, nothing)
 ```
 """
 function wc_past_extragradient(n, gamma, L; solver=Clarabel.Optimizer, verbose=true)

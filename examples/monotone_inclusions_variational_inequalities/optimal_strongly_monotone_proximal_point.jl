@@ -63,7 +63,12 @@ The reference value computed by the example is
 ```
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+The detailed approach and tight bound are available in [1].
+
+[[1] J. Park, E. Ryu (2022).
+Exact Optimal Accelerated Complexity for Fixed-Point Iterations.
+In 39th International Conference on Machine Learning (ICML).](https://proceedings.mlr.press/v162/park22c/park22c.pdf)
 
 # Arguments
 - `n`: number of iterations.
@@ -78,6 +83,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 wc_optimal_strongly_monotone_proximal_point(10, 0.05; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.003937, 0.003937)
 ```
 """
 function wc_optimal_strongly_monotone_proximal_point(n, mu; solver=Clarabel.Optimizer, verbose=true)

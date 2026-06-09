@@ -72,6 +72,7 @@ in Optimization: Vol. 5, No. 1-2.](https://arxiv.org/pdf/2101.09545.pdf)
 # Julia usage
 ```julia
 PEPit_val, theoretical_val = wc_accelerated_gradient_strongly_convex(0.1, 1.0, 2, verbose=true)
+# Returns approximately: (PEPit_val, theoretical_val) = (0.347602, 0.467544)
 ```
 """
 function wc_accelerated_gradient_strongly_convex(mu, L, n; verbose=false)

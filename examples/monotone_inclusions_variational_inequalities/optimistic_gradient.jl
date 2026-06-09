@@ -66,6 +66,7 @@ Last-Iterate Convergence of Optimistic Gradient Method for Monotone Variational 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_optimistic_gradient(5, 1 / 4, 1; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.066314, nothing)
 ```
 """
 function wc_optimistic_gradient(n, gamma, L; solver=Clarabel.Optimizer, verbose=true)

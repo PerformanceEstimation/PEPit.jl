@@ -1,34 +1,71 @@
 using OrderedCollections
 
 @doc raw"""
-    NonexpansiveOperator(param; <keyword arguments>)
+    NonexpansiveOperator(param=OrderedDict(); reuse_gradient=true)
 
-Represent the `NonexpansiveOperator` interpolation class in PEPit.jl.
+Interpolation class of (possibly inconsistent) nonexpansive operators.
 
-Implement the interpolation constraints of the class of (possibly inconsistent) nonexpansive operators.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
-# Note
-
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `v`: infimal displacement vector.
+- `param["v"]` (optional, default `nothing`): infimal displacement vector ``v``, given as a [`Point`](@ref).
 
-Nonexpansive operators are not characterized by any parameter, hence can be initiated as
+Nonexpansive operators are not otherwise characterized by any parameter.
+Omitting `"v"` corresponds to the consistent case.
+
+# Interpolation conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where
+``g_i = T(x_i)`` denotes the operator value at ``x_i``, the following
+constraint is added for every pair ``i \neq j``:
+
+```math
+\|g_i - g_j\|^2 \leqslant \|x_i - x_j\|^2.
+```
+
+When the infimal displacement vector ``v`` is provided, the following
+constraint is also added for every ``i`` (see [2]):
+
+```math
+\|v\|^2 \leqslant \langle x_i - g_i, v \rangle.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, NonexpansiveOperator, param)
+op = declare_function!(problem, NonexpansiveOperator, OrderedDict())
 ```
 
+!!! note
+    Any nonexpansive operator ``T`` has a unique vector called the *infimal
+    displacement vector*, which we denote by ``v``. If a nonexpansive operator
+    is consistent, i.e., has a fixed point, then ``v = 0``. If ``v`` is
+    nonzero, the operator is inconsistent, i.e., does not have a fixed point.
+
 # Fields
-- `v`: class parameter or auxiliary state stored as `Union{Point,Nothing}`.
+- `v::Union{Point,Nothing}`: infimal displacement vector ``v``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+Discussions and appropriate pointers for the interpolation problem can be
+found in:
+
+[[1] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020).
+Operator splitting performance estimation: Tight contraction factors and
+optimal parameter selection. SIAM Journal on Optimization, 30(3),
+2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+[[2] J. Park, E. Ryu (2023).
+Accelerated Infeasibility Detection of Constrained Optimization and
+Fixed-Point Iterations. arXiv preprint:2303.15876.](https://arxiv.org/pdf/2303.15876.pdf)
+
+See also [`declare_function!`](@ref), [`LipschitzOperator`](@ref), and
+[`fixed_point!`](@ref).
 """
 mutable struct NonexpansiveOperator <: AbstractFunction
     v::Union{Point,Nothing}

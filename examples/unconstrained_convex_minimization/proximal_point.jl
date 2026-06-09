@@ -73,6 +73,7 @@ SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_proximal_point(3, 4; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.020833, 0.020833)
 ```
 """
 function wc_proximal_point(gamma, n; solver=Clarabel.Optimizer, verbose=true)

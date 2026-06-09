@@ -85,6 +85,7 @@ Optimization Theory and Applications, 172(1), 187-205.](https://arxiv.org/pdf/15
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_optimized_gradient(3.0, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.076752, 0.076752)
 ```
 """
 function wc_optimized_gradient(L, n; verbose=true)

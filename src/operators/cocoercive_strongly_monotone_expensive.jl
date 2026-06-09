@@ -1,37 +1,77 @@
 @doc raw"""
     CocoerciveStronglyMonotoneOperatorExpensive(param; reuse_gradient=true)
 
-Represent the `CocoerciveStronglyMonotoneOperatorExpensive` interpolation class in PEPit.jl.
+Class of ``\beta``-cocoercive and ``\mu``-strongly monotone (maximally
+monotone) operators, modeled through the strengthened necessary constraints of
+[1, Appendix F], which are stronger than those used in [2] (and in
+[`CocoerciveStronglyMonotoneOperatorCheap`](@ref)) but significantly more
+expensive (two ``7 \times 7`` PSD blocks per ordered triplet of oracle
+points).
 
-Implement some necessary constraints verified by the class of cocoercive
-and strongly monotone (maximally) operators. Those conditions are presented in [1, Appendix F] and are
-stronger than those used in [2].
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-# Note
+!!! warning
+    Those constraints might not be sufficient, thus the characterized class
+    might contain more operators.
 
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `mu`: strong monotonicity parameter
-- `beta`: cocoercivity parameter
+- `param["mu"]`: strong monotonicity parameter ``\mu``.
+- `param["beta"]`: cocoercivity parameter ``\beta``.
 
-Cocoercive operators are characterized by the parameters $\mu$ and $\beta$,
-hence can be instantiated as
+# Necessary conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the implementation considers, for every
+ordered triplet of oracle points ``(i, j, k)`` (not all equal), the pairwise
+strong-monotonicity residuals and cocoercivity residuals
+
+```math
+A_{pq} = -\langle g_p - g_q, x_p - x_q \rangle + \mu \|x_p - x_q\|^2, \qquad
+B_{pq} = -\langle g_p - g_q, x_p - x_q \rangle + \beta \|g_p - g_q\|^2,
+```
+
+over the pairs ``(p, q) \in \{(i,j), (i,k), (j,k)\}``. Two ``7 \times 7``
+matrices are built from these residuals together with nine free slack
+[`Expression`](@ref)s (the two matrices differ by swapping the roles of the
+two residual families), and both are constrained to be PSD through
+[`PSDMatrix`](@ref) objects, following [1, Appendix F]. See the implementation
+of `add_class_constraints!` in this file for the exact entries.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, CocoerciveStronglyMonotoneOperatorExpensive, param)
+param = OrderedDict("mu" => 0.1, "beta" => 1.0)
+op = declare_function!(problem, CocoerciveStronglyMonotoneOperatorExpensive, param)
 ```
 
+!!! note
+    With `mu == 0` the class reduces to [`CocoerciveOperator`](@ref), and with
+    `beta == 0` to [`StronglyMonotoneOperator`](@ref); the constructor emits a
+    warning in those cases.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `beta`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong monotonicity parameter ``\mu``.
+- `beta::Float64`: cocoercivity parameter ``\beta``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+A constructive approach to strengthen algebraic descriptions of function and
+operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+[[2] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020).
+Operator splitting performance estimation: Tight contraction factors and
+optimal parameter selection. SIAM Journal on Optimization, 30(3),
+2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+See also [`declare_function!`](@ref), [`CocoerciveOperator`](@ref),
+[`StronglyMonotoneOperator`](@ref), and
+[`CocoerciveStronglyMonotoneOperatorCheap`](@ref).
 """
 mutable struct CocoerciveStronglyMonotoneOperatorExpensive <: AbstractFunction
     mu::Float64

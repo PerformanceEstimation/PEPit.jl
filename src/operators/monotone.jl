@@ -1,28 +1,50 @@
 @doc raw"""
     MonotoneOperator(param=OrderedDict(); reuse_gradient=false)
 
-Represent the `MonotoneOperator` interpolation class in PEPit.jl.
+Interpolation class of maximally monotone operators (see, e.g., [1] for an
+extensive discussion of maximal monotonicity).
 
-Implement interpolation constraints for the class of maximally monotone operators.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
-# Note
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+# Class parameters
+General maximally monotone operators are not characterized by any parameter,
+so `param` may be left empty.
 
-General maximally monotone operators are not characterized by any parameter, hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the following constraint is added for
+every pair ``i \neq j``:
+
+```math
+\langle g_i - g_j, x_i - x_j \rangle \geqslant 0.
+```
+
+Maximality guarantees that any monotone set of pairs can be extended to a
+maximally monotone operator, so these conditions are interpolation conditions
+for the class.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, MonotoneOperator, param)
+op = declare_function!(problem, MonotoneOperator, OrderedDict())
 ```
 
 # Fields
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] H. H. Bauschke and P. L. Combettes (2017).
+Convex Analysis and Monotone Operator Theory in Hilbert Spaces.
+Springer New York.](https://link.springer.com/book/10.1007/978-3-319-48311-5)
+
+See also [`declare_function!`](@ref), [`StronglyMonotoneOperator`](@ref), and
+[`CocoerciveOperator`](@ref).
 """
 mutable struct MonotoneOperator <: AbstractFunction
     _PEPit_func::PEPFunction

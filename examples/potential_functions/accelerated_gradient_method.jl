@@ -83,6 +83,7 @@ Foundations and Trends in Optimization: Vol. 5, No. 1-2.](https://arxiv.org/pdf/
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_gradient_method(1.0, 1.0, 10.0; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.0, 0.0)
 ```
 """
 function wc_accelerated_gradient_method(L, gamma, lam; verbose=true)

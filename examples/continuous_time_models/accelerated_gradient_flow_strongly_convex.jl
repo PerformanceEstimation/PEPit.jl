@@ -93,6 +93,7 @@ In SIAM Journal on Optimization 33 (3), 1558-1586.](https://arxiv.org/pdf/2205.1
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_gradient_flow_strongly_convex(0.1; psd=true, solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (-0.316228, -0.316228)
 ```
 """
 function wc_accelerated_gradient_flow_strongly_convex(mu; psd=true, solver=Clarabel.Optimizer, verbose=true)

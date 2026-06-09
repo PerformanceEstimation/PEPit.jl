@@ -72,6 +72,7 @@ Gradient Descent Is Optimal Under Lower Restricted Secant Inequality And Upper E
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_subgradient_method_rsi_eb(mu, L, mu / L^2, 4; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.960596, 0.960596)
 ```
 """
 function wc_subgradient_method_rsi_eb(mu, L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

@@ -74,6 +74,7 @@ Journal of Global Optimization 75.4 (2019): 1029-1060.](https://arxiv.org/pdf/18
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_epsilon_subgradient_method(M, n, gamma, eps, R; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (1.019156, 1.044911)
 ```
 """
 function wc_epsilon_subgradient_method(M, n, gamma, eps, R; solver=Clarabel.Optimizer, verbose=true)

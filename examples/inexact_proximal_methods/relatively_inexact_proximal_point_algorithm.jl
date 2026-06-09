@@ -75,6 +75,7 @@ arXiv 2006.06041v2.](https://arxiv.org/pdf/2006.06041.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_relatively_inexact_proximal_point_algorithm(8, 10, 0.65; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.007678, 0.008494)
 ```
 """
 function wc_relatively_inexact_proximal_point_algorithm(n, gamma, sigma; solver=Clarabel.Optimizer, verbose=true)

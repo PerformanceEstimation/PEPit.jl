@@ -1,34 +1,61 @@
 using OrderedCollections
 
 @doc raw"""
-    ConvexIndicatorFunction(param; <keyword arguments>)
+    ConvexIndicatorFunction(param=OrderedDict(); reuse_gradient=false)
 
-Represent the `ConvexIndicatorFunction` interpolation class in PEPit.jl.
+Interpolation class of closed convex indicator functions, optionally with a
+bounded feasible set (through its diameter ``D`` and/or its radius ``R``).
 
-Implement interpolation constraints for the class of closed convex indicator functions.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `D`: upper bound on the diameter of the feasible set, possibly set to `Inf`
-- `R`: upper bound on the radius of the feasible set, possibly set to `Inf`
-- `center`: Center of the feasible set spanned by the radius constraint. If set to `nothing`, there exists such a point but it remains undefined.
+- `param["D"]` (optional, default `Inf`): upper bound ``D`` on the diameter of the feasible set.
+- `param["R"]` (optional, default `Inf`): upper bound ``R`` on the radius of the feasible set.
+- `param["center"]` (optional, default `nothing`): center [`Point`](@ref) used by the radius constraint.
 
-Convex indicator functions are characterized by a parameter `D` and/or `R`, hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the triplet ``(x_i, g_i, f_i)``, where
+``g_i`` is a subgradient of the indicator at the (feasible) point ``x_i``, the
+following constraints are added (see [1]):
+
+```math
+\begin{aligned}
+f_i & = 0 && \text{for all } i, \\
+0 & \geqslant \langle g_j, x_i - x_j \rangle && \text{for all } i \neq j, \\
+\|x_i - x_j\|^2 & \leqslant D^2 && \text{for all } i \neq j \text{ (added when } D < \infty\text{)}, \\
+\|x_i - c\|^2 & \leqslant R^2 && \text{for all } i \text{ (added when } R < \infty\text{)},
+\end{aligned}
+```
+
+where ``c`` is the center of the radius constraint.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("D" => 1.0)
 f = declare_function!(problem, ConvexIndicatorFunction, param)
 ```
 
+!!! note
+    When `R < Inf` and no `"center"` is supplied, the constructor automatically
+    creates a fresh [`Point`](@ref) to act as the (otherwise unspecified)
+    center ``c``.
+
 # Fields
-- `D`: class parameter or auxiliary state stored as `Float64`.
-- `R`: class parameter or auxiliary state stored as `Float64`.
-- `center`: class parameter or auxiliary state stored as `Union{Point,Nothing}`.
+- `D::Float64`: diameter bound ``D``.
+- `R::Float64`: radius bound ``R``.
+- `center::Union{Point,Nothing}`: center of the radius constraint.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Taylor, J. Hendrickx, F. Glineur (2017).
+Exact worst-case performance of first-order methods for composite convex
+optimization. SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516.pdf)
+
+See also [`declare_function!`](@ref), [`ConvexFunction`](@ref), and
+[`ConvexSupportFunction`](@ref).
 """
 mutable struct ConvexIndicatorFunction <: AbstractFunction
     D::Float64

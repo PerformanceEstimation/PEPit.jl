@@ -1,34 +1,51 @@
 @doc raw"""
     StronglyMonotoneOperator(param; reuse_gradient=false)
 
-Represent the `StronglyMonotoneOperator` interpolation class in PEPit.jl.
+Interpolation class of ``\mu``-strongly monotone (and maximally monotone)
+operators.
 
-Implement interpolation constraints of the class of strongly monotone
-(maximally monotone) operators.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
-# Note
-
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `mu`: strong monotonicity parameter
+- `param["mu"]`: strong monotonicity parameter ``\mu``.
 
-Strongly monotone (and maximally monotone) operators are characterized by the parameter $\mu$,
-hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the following constraint is added for
+every pair ``i \neq j``:
+
+```math
+\langle g_i - g_j, x_i - x_j \rangle \geqslant \mu \|x_i - x_j\|^2.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, StronglyMonotoneOperator, param)
+param = OrderedDict("mu" => 0.1)
+op = declare_function!(problem, StronglyMonotoneOperator, param)
 ```
 
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong monotonicity parameter ``\mu``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+Discussions and appropriate pointers for the problem of interpolation of
+maximally monotone operators can be found in:
+
+[[1] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020).
+Operator splitting performance estimation: Tight contraction factors and
+optimal parameter selection. SIAM Journal on Optimization, 30(3),
+2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+See also [`declare_function!`](@ref), [`MonotoneOperator`](@ref), and
+[`LipschitzStronglyMonotoneOperatorCheap`](@ref).
 """
 mutable struct StronglyMonotoneOperator <: AbstractFunction
     mu::Float64

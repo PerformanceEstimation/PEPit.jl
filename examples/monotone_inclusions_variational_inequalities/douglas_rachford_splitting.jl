@@ -75,6 +75,7 @@ Tight contraction factors and optimal parameter selection. SIAM Journal on Optim
 # Julia usage
 ```julia
 wc_douglas_rachford_splitting(1.0, 0.1, 1.3, 0.9; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.928771, 0.928771)
 ```
 """
 function wc_douglas_rachford_splitting(L, mu, alpha, theta; solver=Clarabel.Optimizer, verbose=true)

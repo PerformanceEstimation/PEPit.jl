@@ -78,6 +78,7 @@ We compare with the guarantees from [4, Theorem 3].
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_quadratic_lojasiewicz_naive(1.0, 0.2, 1.0, 1; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.727273, 0.727273)
 ```
 """
 function wc_gradient_descent_quadratic_lojasiewicz_naive(L, mu, gamma, n; solver=Clarabel.Optimizer, verbose=true)

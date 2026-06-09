@@ -69,6 +69,7 @@ A Modern Introduction to Online Learning.](https://arxiv.org/pdf/1912.13213)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_online_follow_leader(M, D, n; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.933013, nothing)
 ```
 """
 function wc_online_follow_leader(M::Real, D::Real, n::Int; solver = Clarabel.Optimizer, verbose = true)

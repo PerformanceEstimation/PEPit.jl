@@ -67,6 +67,7 @@ In 39th International Conference on Machine Learning (ICML).](https://proceeding
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_optimal_contractive_halpern_iteration(10, 1.1; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.010613, 0.010613)
 ```
 """
 function wc_optimal_contractive_halpern_iteration(n, gamma; solver=Clarabel.Optimizer, verbose=true)

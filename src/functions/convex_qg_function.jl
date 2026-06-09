@@ -1,30 +1,49 @@
 @doc raw"""
     ConvexQGFunction(param; reuse_gradient=false)
 
-Represent the `ConvexQGFunction` interpolation class in PEPit.jl.
+Interpolation class of convex and quadratically upper bounded
+(``\text{QG}^+`` [1]) functions, that is, convex functions satisfying
+``f(x) - f_\star \leqslant \frac{L}{2} \|x - x_\star\|^2`` for all ``x``.
 
-Implement the interpolation constraints of the class of quadratically upper bounded ($\text{QG}^+$ [1]),
-i.e. $\forall x, f(x) - f_\star \leqslant \frac{L}{2} \|x-x_\star\|^2$, and convex functions.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
 # Class parameters
-- `L`: The quadratic upper bound parameter
+- `param["L"]`: quadratic upper bound parameter ``L``.
 
-General quadratically upper bounded ($\text{QG}^+$) convex functions are characterized
-by the quadratic growth parameter `L`, hence can be instantiated as
+# Interpolation conditions
+A stationary point ``(x_\star, g_\star = 0, f_\star)`` is created automatically
+if none was requested through [`stationary_point!`](@ref). Associating with
+each oracle call ``i`` the triplet ``(x_i, g_i, f_i)`` of point, subgradient,
+and function value, the following constraints are added (see [1]):
+
+```math
+\begin{aligned}
+f_\star - f_j & \geqslant \langle g_j, x_\star - x_j \rangle + \frac{1}{2L} \|g_j\|^2
+&& \text{for all } j \text{ with } x_j \neq x_\star, \\
+f_i - f_j & \geqslant \langle g_j, x_i - x_j \rangle && \text{for all } i \neq j.
+\end{aligned}
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
+param = OrderedDict("L" => 1.0)
 f = declare_function!(problem, ConvexQGFunction, param)
 ```
 
 # Fields
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `L::Float64`: quadratic upper bound parameter ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] B. Goujaud, A. Taylor, A. Dieuleveut (2022).
+Optimal first-order methods for convex functions with a quadratic upper
+bound.](https://arxiv.org/pdf/2205.15033.pdf)
+
+See also [`declare_function!`](@ref), [`stationary_point!`](@ref), and
+[`ConvexFunction`](@ref).
 """
 mutable struct ConvexQGFunction <: AbstractFunction
     L::Float64

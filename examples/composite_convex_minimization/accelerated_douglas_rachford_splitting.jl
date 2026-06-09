@@ -87,6 +87,7 @@ In 53rd IEEE Conference on Decision and Control (CDC).](https://arxiv.org/pdf/14
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_douglas_rachford_splitting(0.1, 1.0, 0.9, 2; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.192915, 1.688889)
 ```
 """
 function wc_accelerated_douglas_rachford_splitting(mu, L, alpha, n; solver=Clarabel.Optimizer, verbose=true)

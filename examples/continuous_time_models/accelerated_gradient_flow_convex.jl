@@ -78,6 +78,7 @@ A systematic approach to Lyapunov analyses of continuous-time models in convex o
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_gradient_flow_convex(3.4; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (-0.0, 0.0)
 ```
 """
 function wc_accelerated_gradient_flow_convex(t; solver=Clarabel.Optimizer, verbose=true)

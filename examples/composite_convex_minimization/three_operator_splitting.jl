@@ -70,6 +70,7 @@ Set-valued and variational analysis, 25(4), 829-858.](https://arxiv.org/pdf/1504
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_three_operator_splitting(0.1, 10.0, L3, alpha, 1.0, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.475452, nothing)
 ```
 """
 function wc_three_operator_splitting(mu1, L1, L3, alpha, theta, n; verbose=true)

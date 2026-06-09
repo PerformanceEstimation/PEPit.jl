@@ -45,13 +45,10 @@ A tight theoretical guarantee can be found in [1, section 4].
 \|x_n - x_{n-1}\|^2 \leqslant \frac{\left(1 - \frac{1}{n}\right)^{n - 1}}{n} \|x_0 - x_\star\|^2.
 ```
 
-**Reference**:
+# References
 
 [[1] G. Gu, J. Yang (2020). Tight sublinear convergence rate of the proximal point algorithm for maximal
 monotone inclusion problem. SIAM Journal on Optimization, 30(3), 1905-1921.](https://epubs.siam.org/doi/pdf/10.1137/19M1299049)
-
-# References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
 
 # Arguments
 - `alpha`: algorithm parameter used in the update rule.
@@ -66,6 +63,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_proximal_point(2.2, 11; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.035039, 0.035049)
 ```
 """
 function wc_proximal_point(alpha, n; solver=Clarabel.Optimizer, verbose=true)

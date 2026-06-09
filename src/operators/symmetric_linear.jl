@@ -1,35 +1,63 @@
 @doc raw"""
     SymmetricLinearOperator(param; reuse_gradient=true)
 
-Represent the `SymmetricLinearOperator` interpolation class in PEPit.jl.
+Interpolation class of symmetric linear operators ``M = M^\ast`` with
+eigenvalues in ``[\mu, L]``.
 
-Implement the interpolation constraints for the class of symmetric linear operators.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
-# Note
-
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `mu`: eigenvalues lower bound
-- `L`: eigenvalues upper bound
+- `param["mu"]`: lower bound ``\mu`` on the eigenvalues.
+- `param["L"]`: upper bound ``L`` on the eigenvalues.
 
-Symmetric Linear operators are characterized by parameters $\mu$ and `L`,
-hence can be instantiated as
+# Interpolation conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where
+``g_i = M x_i`` denotes the operator value at ``x_i``, the following symmetry
+constraints are added (see [1]):
+
+```math
+\langle x_i, g_j \rangle = \langle x_j, g_i \rangle
+\qquad \text{for all } i < j,
+```
+
+together with the PSD constraint ``T \succeq 0``, where
+
+```math
+T_{ij} = L \langle g_i, x_j \rangle - \langle g_i, g_j \rangle
+- \mu L \langle x_i, x_j \rangle + \mu \langle x_i, g_j \rangle,
+```
+
+which is the Gram-space formulation of ``(L I - M)(M - \mu I) \succeq 0``.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, SymmetricLinearOperator, param)
+param = OrderedDict("mu" => 0.1, "L" => 1.0)
+M = declare_function!(problem, SymmetricLinearOperator, param)
 ```
 
+!!! note
+    Symmetric linear operators are necessarily continuous, hence
+    `reuse_gradient` is set to `true`.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: eigenvalue lower bound ``\mu``.
+- `L::Float64`: eigenvalue upper bound ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] N. Bousselmi, J. Hendrickx, F. Glineur (2023).
+Interpolation Conditions for Linear Operators and applications to Performance
+Estimation Problems. arXiv preprint.](https://arxiv.org/pdf/2302.08781.pdf)
+
+See also [`declare_function!`](@ref), [`LinearOperator`](@ref), and
+[`SkewSymmetricLinearOperator`](@ref).
 """
 mutable struct SymmetricLinearOperator <: AbstractFunction
     mu::Float64

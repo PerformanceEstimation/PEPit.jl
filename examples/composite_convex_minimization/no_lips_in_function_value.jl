@@ -78,6 +78,7 @@ Mathematical Programming, 1-43.](https://arxiv.org/pdf/1911.08510.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_no_lips_in_function_value(L, gamma, 3; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.666667, 0.666667)
 ```
 """
 function wc_no_lips_in_function_value(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

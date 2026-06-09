@@ -77,6 +77,7 @@ Optimal first-order methods for convex functions with a quadratic upper bound.](
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_conjugate_gradient_qg_convex(1.0, 12; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.038462, 0.038462)
 ```
 """
 function wc_conjugate_gradient_qg_convex(L, n; solver=Clarabel.Optimizer, verbose=true)

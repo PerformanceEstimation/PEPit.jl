@@ -1,44 +1,80 @@
 @doc raw"""
     LipschitzStronglyMonotoneOperatorExpensive(param; reuse_gradient=true)
 
-Represent the `LipschitzStronglyMonotoneOperatorExpensive` interpolation class in PEPit.jl.
+Class of ``L``-Lipschitz continuous and ``\mu``-strongly monotone (maximally
+monotone) operators, modeled through the strengthened necessary constraints of
+[1, Proposition 3.15] (details in [1, Appendix E]), which are stronger than
+those used in [2] (and in [`LipschitzStronglyMonotoneOperatorCheap`](@ref))
+but significantly more expensive (two ``7 \times 7`` PSD blocks per ordered
+triplet of oracle points).
 
-Implement some constraints (which are not necessary and sufficient for interpolation)
-for the class of Lipschitz continuous strongly monotone (and maximally monotone) operators.
-Those conditions are presented in [1, Proposition 3.15] (details in [1, Appendix E]) and are stronger than
-those used in [2].
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-# Warning
+!!! warning
+    Lipschitz strongly monotone operators do not enjoy known interpolation
+    conditions. The conditions implemented in this class are necessary but a
+    priori not sufficient for interpolation. Hence, the numerical results
+    obtained when using this class might be non-tight upper bounds (see
+    Discussions in [1, Section 2]).
 
-    Lipschitz strongly monotone operators do not enjoy known interpolation conditions. The conditions implemented
-    in this class are necessary but a priori not sufficient for interpolation. Hence, the numerical results
-    obtained when using this class might be non-tight upper bounds (see Discussions in [1, Section 2]).
-
-# Note
-
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `mu`: strong monotonicity parameter
-- `L`: Lipschitz parameter
+- `param["mu"]`: strong monotonicity parameter ``\mu``.
+- `param["L"]`: Lipschitz continuity parameter ``L``.
 
-Lipschitz continuous strongly monotone operators are characterized by parameters $\mu$ and `L`,
-hence can be instantiated as
+# Necessary conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the implementation considers, for every
+ordered triplet of oracle points ``(i, j, k)`` (not all equal), the pairwise
+Lipschitz residuals and scaled strong-monotonicity residuals
+
+```math
+A_{pq} = \|g_p - g_q\|^2 - L^2 \|x_p - x_q\|^2, \qquad
+B_{pq} = 2L \left( -\langle g_p - g_q, x_p - x_q \rangle + \mu \|x_p - x_q\|^2 \right),
+```
+
+over the pairs ``(p, q) \in \{(i,j), (i,k), (j,k)\}``. Two ``7 \times 7``
+matrices are built from these residuals together with nine free slack
+[`Expression`](@ref)s (the two matrices differ by swapping the roles of the
+two residual families), and both are constrained to be PSD through
+[`PSDMatrix`](@ref) objects, following [1, Proposition 3.15]. See the
+implementation of `add_class_constraints!` in this file for the exact entries.
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, LipschitzStronglyMonotoneOperatorExpensive, param)
+param = OrderedDict("mu" => 0.1, "L" => 1.0)
+op = declare_function!(problem, LipschitzStronglyMonotoneOperatorExpensive, param)
 ```
 
+!!! note
+    With `L == Inf` the Lipschitz bound adds no constraint, so the class
+    reduces to [`StronglyMonotoneOperator`](@ref); the constructor emits a
+    warning in that case.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `L`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong monotonicity parameter ``\mu``.
+- `L::Float64`: Lipschitz continuity parameter ``L``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] A. Rubbens, J.M. Hendrickx, A. Taylor (2025).
+A constructive approach to strengthen algebraic descriptions of function and
+operator classes.](https://arxiv.org/pdf/2504.14377.pdf)
+
+[[2] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020).
+Operator splitting performance estimation: Tight contraction factors and
+optimal parameter selection. SIAM Journal on Optimization, 30(3),
+2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+See also [`declare_function!`](@ref), [`LipschitzOperator`](@ref),
+[`StronglyMonotoneOperator`](@ref), and
+[`LipschitzStronglyMonotoneOperatorCheap`](@ref).
 """
 mutable struct LipschitzStronglyMonotoneOperatorExpensive <: AbstractFunction
     mu::Float64

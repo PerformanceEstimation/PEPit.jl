@@ -1,34 +1,64 @@
 @doc raw"""
     LinearOperator(param; reuse_gradient=true)
 
-Represent the `LinearOperator` interpolation class in PEPit.jl.
+Interpolation class of linear operators ``M`` with singular values bounded by
+``L``.
 
-Implement the interpolation constraints of the class of linear operators.
+Overrides `add_class_constraints!` to add the interpolation conditions of the
+class when [`solve!`](@ref) builds the SDP.
 
-# Note
-
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used. The adjoint operator ``M^\ast`` is available as the
+    field `T`: calling `gradient!(M.T, u)` evaluates ``M^\ast u``.
 
 # Class parameters
-- `L`: singular values upper bound
-- `T`: the adjunct linear operator
+- `param["L"]`: upper bound ``L`` on the singular values of the operator.
 
-Linear operators are characterized by the parameter $L$, hence can be instantiated as
+# Interpolation conditions
+Denoting by ``(x_i, y_i)`` the oracle pairs of ``M`` (with ``y_i = M x_i``)
+and by ``(u_j, v_j)`` the oracle pairs of the adjoint ``M^\ast`` (with
+``v_j = M^\ast u_j``), the following constraints are added (see [1]):
+
+```math
+\langle x_i, v_j \rangle = \langle y_i, u_j \rangle
+\qquad \text{for all pairs } (i, j),
+```
+
+together with the two PSD constraints ``T^{(1)} \succeq 0`` and
+``T^{(2)} \succeq 0``, where
+
+```math
+T^{(1)}_{ij} = L^2 \langle x_i, x_j \rangle - \langle y_i, y_j \rangle, \qquad
+T^{(2)}_{ij} = L^2 \langle u_i, u_j \rangle - \langle v_i, v_j \rangle.
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, LinearOperator, param)
+param = OrderedDict("L" => 1.0)
+M = declare_function!(problem, LinearOperator, param)
+y = gradient!(M, x)    # evaluates M * x
+v = gradient!(M.T, u)  # evaluates M' * u
 ```
 
-# Fields
-- `L`: class parameter or auxiliary state stored as `Float64`.
-- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
-- `T`: class parameter or auxiliary state stored as `PEPFunction`.
+!!! note
+    Linear operators are necessarily continuous, hence `reuse_gradient` is set
+    to `true`.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# Fields
+- `L::Float64`: singular value bound ``L``.
+- `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
+- `T::PEPFunction`: the adjoint linear operator ``M^\ast`` (created automatically by the constructor).
+
+# References
+
+[[1] N. Bousselmi, J. Hendrickx, F. Glineur (2023).
+Interpolation Conditions for Linear Operators and applications to Performance
+Estimation Problems. arXiv preprint.](https://arxiv.org/pdf/2302.08781.pdf)
+
+See also [`declare_function!`](@ref), [`SymmetricLinearOperator`](@ref), and
+[`SkewSymmetricLinearOperator`](@ref).
 """
 mutable struct LinearOperator <: AbstractFunction
     L::Float64

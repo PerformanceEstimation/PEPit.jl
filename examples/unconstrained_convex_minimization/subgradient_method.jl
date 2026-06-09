@@ -78,6 +78,7 @@ Mathematical Programming, 160(1), 321-351.](https://arxiv.org/pdf/1409.2636.pdf)
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_subgradient_method(M, n, gamma; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.755929, 0.755929)
 ```
 """
 function wc_subgradient_method(M, n, gamma; solver=Clarabel.Optimizer, verbose=true)

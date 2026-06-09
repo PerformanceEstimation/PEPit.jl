@@ -64,6 +64,7 @@ Journal of Optimization Theory and Applications, 73(3), 451-464.](https://link.s
 # Julia usage
 ```julia
 PEPit_tau, theoretical_tau = wc_bregman_proximal_point(3.0, 5; verbose=true)
+# Returns approximately: (PEPit_tau, theoretical_tau) = (0.066667, 0.066667)
 ```
 """
 function wc_bregman_proximal_point(gamma, n; verbose=true)

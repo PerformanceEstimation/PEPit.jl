@@ -71,6 +71,7 @@ A constructive approach to strengthen algebraic descriptions of function and ope
 # Julia usage
 ```julia
 wc_optimistic_gradient_refined_cocoercive(1, 1 / 4, 1 / 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (1.333333, nothing)
 ```
 """
 function wc_optimistic_gradient_refined_cocoercive(n, gamma, beta; solver=Clarabel.Optimizer, verbose=true)

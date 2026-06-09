@@ -82,6 +82,7 @@ Advances in Neural Information Processing Systems (NIPS), 29, 676-684.](https://
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_point_saga(1.0, 0.01, 10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.971405, 0.973292)
 ```
 """
 function wc_point_saga(L, mu, n; solver=Clarabel.Optimizer, verbose=true)

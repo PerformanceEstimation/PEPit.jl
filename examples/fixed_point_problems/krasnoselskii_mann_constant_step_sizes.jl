@@ -39,22 +39,19 @@ A theoretical **upper** bound is provided by [1, Theorem 4.9]
 
 ```math
 \tau(n) = \left\{
+\begin{aligned}
+    \frac{1}{n+1}\left(\frac{n}{n+1}\right)^n \frac{1}{4 \gamma (1 - \gamma)}\quad & \text{if } \frac{1}{2}\leqslant \gamma  \leqslant \frac{1}{2}\left(1+\sqrt{\frac{n}{n+1}}\right) \\
+    (\gamma - 1)^{2n} \quad & \text{if } \frac{1}{2}\left(1+\sqrt{\frac{n}{n+1}}\right) <  \gamma \leqslant  1.
+\end{aligned}
+\right.
 ```
-                  \begin{aligned}
-                      \frac{1}{n+1}\left(\frac{n}{n+1}\right)^n \frac{1}{4 \gamma (1 - \gamma)}\quad & \text{if } \frac{1}{2}\leqslant \gamma  \leqslant \frac{1}{2}\left(1+\sqrt{\frac{n}{n+1}}\right) \\
-                      (\gamma - 1)^{2n} \quad & \text{if } \frac{1}{2}\left(1+\sqrt{\frac{n}{n+1}}\right) <  \gamma \leqslant  1.
-                  \end{aligned}
-                  \right.
-
-**Reference**:
-
-[[1] F. Lieder (2018).
-Projection Based Methods for Conic Linear Programming
-Optimal First Order Complexities and Norm Constrained Quasi Newton Methods.
-PhD thesis, HHU Dusseldorf.](https://docserv.uni-duesseldorf.de/servlets/DerivateServlet/Derivate-49971/Dissertation.pdf)
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+
+[[1] F. Lieder (2018).
+Projection Based Methods for Conic Linear Programming — Optimal First Order
+Complexities and Norm Constrained Quasi Newton Methods.
+PhD thesis, HHU Düsseldorf.](https://docserv.uni-duesseldorf.de/servlets/DerivateServlet/Derivate-49971/Dissertation.pdf)
 
 # Arguments
 - `n`: number of iterations.
@@ -69,6 +66,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_krasnoselskii_mann_constant_step_sizes(3, 3 / 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.140625, 0.140625)
 ```
 """
 function wc_krasnoselskii_mann_constant_step_sizes(n, gamma; solver=Clarabel.Optimizer, verbose=true)

@@ -1,36 +1,63 @@
 @doc raw"""
     CocoerciveStronglyMonotoneOperatorCheap(param; reuse_gradient=true)
 
-Represent the `CocoerciveStronglyMonotoneOperatorCheap` interpolation class in PEPit.jl.
+Class of ``\beta``-cocoercive and ``\mu``-strongly monotone (maximally
+monotone) operators, modeled through a cheap set of necessary constraints.
 
-Implement some necessary constraints verified by the class of cocoercive
-and strongly monotone (maximally) operators.
+Overrides `add_class_constraints!` to add the conditions of the class when
+[`solve!`](@ref) builds the SDP.
 
-# Note
+!!! warning
+    Those constraints might not be sufficient, thus the characterized class
+    might contain more operators.
 
-    Operator values can be requested through `gradient`, and `function values` should not be used.
+!!! note
+    Operator values are requested through [`gradient!`](@ref); function values
+    should not be used.
 
 # Class parameters
-- `mu`: strong monotonicity parameter
-- `beta`: cocoercivity parameter
+- `param["mu"]`: strong monotonicity parameter ``\mu``.
+- `param["beta"]`: cocoercivity parameter ``\beta``.
 
-Cocoercive operators are characterized by the parameters $\mu$ and $\beta$,
-hence can be instantiated as
+# Necessary conditions
+Associating with each oracle call ``i`` the pair ``(x_i, g_i)``, where ``g_i``
+denotes the operator value at ``x_i``, the following constraints are added for
+every pair ``i \neq j`` (see [1]):
+
+```math
+\begin{aligned}
+\langle g_i - g_j, x_i - x_j \rangle & \geqslant \beta \|g_i - g_j\|^2, \\
+\langle g_i - g_j, x_i - x_j \rangle & \geqslant \mu \|x_i - x_j\|^2.
+\end{aligned}
+```
 
 # Julia usage
 ```julia
 problem = PEP()
-param = OrderedDict("L" => 1.0)  # adapt keys to the class
-f = declare_function!(problem, CocoerciveStronglyMonotoneOperatorCheap, param)
+param = OrderedDict("mu" => 0.1, "beta" => 1.0)
+op = declare_function!(problem, CocoerciveStronglyMonotoneOperatorCheap, param)
 ```
 
+!!! note
+    With `mu == 0` the class reduces to [`CocoerciveOperator`](@ref), and with
+    `beta == 0` to [`StronglyMonotoneOperator`](@ref); the constructor emits a
+    warning in those cases.
+
 # Fields
-- `mu`: class parameter or auxiliary state stored as `Float64`.
-- `beta`: class parameter or auxiliary state stored as `Float64`.
+- `mu::Float64`: strong monotonicity parameter ``\mu``.
+- `beta::Float64`: cocoercivity parameter ``\beta``.
 - `_PEPit_func`: internal [`PEPFunction`](@ref) storing oracle calls and constraints.
 
-# Implementation
-The constructor receives parameters through an `OrderedDict`; `add_class_constraints!` adds the interpolation model when [`solve!`](@ref) builds the SDP.
+# References
+
+[[1] E. Ryu, A. Taylor, C. Bergeling, P. Giselsson (2020).
+Operator splitting performance estimation: Tight contraction factors and
+optimal parameter selection. SIAM Journal on Optimization, 30(3),
+2251-2271.](https://arxiv.org/pdf/1812.00146.pdf)
+
+See also [`declare_function!`](@ref), [`CocoerciveOperator`](@ref),
+[`StronglyMonotoneOperator`](@ref), and
+[`CocoerciveStronglyMonotoneOperatorExpensive`](@ref).
 """
 mutable struct CocoerciveStronglyMonotoneOperatorCheap <: AbstractFunction
     mu::Float64

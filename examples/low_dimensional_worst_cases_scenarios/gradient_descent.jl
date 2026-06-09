@@ -71,6 +71,7 @@ gradient method with fixed step lengths for L-smooth functions. Optimization Let
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent(L, gamma, 5; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.266657, 0.266667)
 ```
 """
 function wc_gradient_descent(L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

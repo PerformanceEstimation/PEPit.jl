@@ -73,6 +73,7 @@ where $\alpha = \mathrm{proj}_{[\frac{\mu}{L},1]} \left(\frac{1}{L\gamma (2n+1)}
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_gradient_descent_quadratics(mu, L, 1 / L, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.064957, 0.064957)
 ```
 """
 function wc_gradient_descent_quadratics(mu, L, gamma, n; solver=Clarabel.Optimizer, verbose=true)

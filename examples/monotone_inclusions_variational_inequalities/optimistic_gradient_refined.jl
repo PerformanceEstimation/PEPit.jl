@@ -71,6 +71,7 @@ A constructive approach to strengthen algebraic descriptions of function and ope
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_optimistic_gradient_refined(1, 1 / 4, 1; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (1.062499, nothing)
 ```
 """
 function wc_optimistic_gradient_refined(n::Int, gamma::Real, L::Real; solver=Clarabel.Optimizer, verbose=true)

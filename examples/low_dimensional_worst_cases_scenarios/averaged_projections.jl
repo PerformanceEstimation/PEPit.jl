@@ -44,7 +44,7 @@ The averaged projection method can be written as
 ```
 
 # References
-No bibliographic reference was listed in the corresponding Python PEPit example docstring.
+No specific bibliographic reference is associated with this example.
 
 # Arguments
 - `n`: number of iterations.
@@ -58,6 +58,7 @@ No bibliographic reference was listed in the corresponding Python PEPit example 
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_averaged_projections(10; solver=Clarabel.Optimizer, verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.068432, nothing)
 ```
 """
 function wc_averaged_projections(n; solver=Clarabel.Optimizer, verbose=true)

@@ -76,6 +76,7 @@ SIAM Journal on Optimization, 27(3):1283-1313.](https://arxiv.org/pdf/1512.07516
 # Julia usage
 ```julia
 pepit_tau, theoretical_tau = wc_accelerated_proximal_gradient_simplified(0.0, 1.0, 4; verbose=true)
+# Returns approximately: (pepit_tau, theoretical_tau) = (0.052632, 0.052632)
 ```
 """
 function wc_accelerated_proximal_gradient_simplified(mu, L, n; solver=Clarabel.Optimizer, verbose=true)
